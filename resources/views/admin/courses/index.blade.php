@@ -2,7 +2,7 @@
     <h1>Manajemen Courses</h1>
 
     @if (session('success'))
-        <div style="background-color: #d4edda; color: #155724; padding: 1rem; margin-bottom: 1rem; border: 1px solid #c3e6cb; border-radius: 5px;">
+        <div style="background-color: #d4edda; color: #155724; padding: 1rem; margin-bottom: 1rem; border-radius: 5px;">
             {{ session('success') }}
         </div>
     @endif
@@ -21,12 +21,15 @@
             </tr>
         </thead>
         <tbody>
+            {{-- Perulangan Dimulai di Sini --}}
             @forelse ($courses as $course)
                 <tr>
                     <td style="padding: 0.75rem;">{{ $courses->firstItem() + $loop->index }}</td>
                     <td style="padding: 0.75rem;">{{ $course->title }}</td>
                     <td style="padding: 0.75rem;">{{ Str::limit($course->description, 100) }}</td>
                     <td style="padding: 0.75rem; white-space: nowrap;">
+                        {{-- Semua kode di bawah ini menggunakan $course (singular) dan harus ada di dalam loop --}}
+                        <a href="{{ route('admin.courses.modules.index', $course) }}" style="color: #17a2b8; text-decoration: none; font-weight: bold;">Modules</a> |
                         <a href="{{ route('admin.courses.edit', $course) }}" style="color: #ffc107; text-decoration: none; font-weight: bold;">Edit</a> |
                         <form action="{{ route('admin.courses.destroy', $course) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus course ini?');">
                             @csrf
@@ -42,9 +45,11 @@
                     </td>
                 </tr>
             @endforelse
+            {{-- Perulangan Selesai di Sini --}}
         </tbody>
     </table>
 
+    {{-- Kode di bawah ini menggunakan $courses (plural), jadi boleh di luar loop --}}
     <div style="margin-top: 1rem;">
         {{ $courses->links() }}
     </div>

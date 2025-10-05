@@ -4,12 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // <-- Tambahkan ini
-use Illuminate\Database\Eloquent\Relations\HasMany;   // <-- Tambahkan ini
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Lesson extends Model
 {
     use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'module_id',
+        'title',
+        'content',
+        'type',
+    ];
 
     /**
      * Sebuah Lesson dimiliki oleh satu Module.
@@ -17,13 +28,5 @@ class Lesson extends Model
     public function module(): BelongsTo
     {
         return $this->belongsTo(Module::class);
-    }
-
-    /**
-     * Sebuah Lesson (jika tipe kuis) memiliki banyak Question.
-     */
-    public function questions(): HasMany
-    {
-        return $this->hasMany(Question::class);
     }
 }
