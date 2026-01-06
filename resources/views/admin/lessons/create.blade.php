@@ -1,30 +1,78 @@
-<div style="font-family: sans-serif; padding: 2rem;">
-    <a href="{{ route('admin.modules.lessons.index', $module) }}" style="color: #6c757d; text-decoration: none;">&larr; Kembali ke Daftar Lessons</a>
-    <h1 style="margin-top: 1rem;">Tambah Lesson Baru untuk: <span style="color: #007bff;">{{ $module->title }}</span></h1>
+<x-admin-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Tambah Materi/Kuis Baru') }}
+        </h2>
+    </x-slot>
 
-    <form action="{{ route('admin.modules.lessons.store', $module) }}" method="POST">
-        @csrf
-        <div style="margin-bottom: 1rem;">
-            <label for="title" style="display: block; margin-bottom: 0.5rem;">Judul Lesson</label>
-            <input type="text" id="title" name="title" value="{{ old('title') }}" style="width: 100%; padding: 0.5rem;" required>
-        </div>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <form action="{{ route('admin.lessons.store') }}" method="POST">
+                        @csrf
+                        
+                        <!-- Module -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <x-input-label for="module_id" :value="__('Pilih Modul')" />
+                                <select name="module_id" id="module_id" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                                    <option value="">-- Pilih Modul --</option>
+                                    @foreach($modules as $module)
+                                        <option value="{{ $module->id }}" {{ old('module_id') == $module->id ? 'selected' : '' }}>
+                                            {{ $module->title }} ({{ $module->course->title }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <x-input-error :messages="$errors->get('module_id')" class="mt-2" />
+                            </div>
 
-        <div style="margin-bottom: 1rem;">
-            <label for="type" style="display: block; margin-bottom: 0.5rem;">Tipe Lesson</label>
-            <select name="type" id="type" style="width: 100%; padding: 0.5rem;" required>
-                <option value="materi">Materi</option>
-                <option value="kuis">Kuis</option>
-                <option value="studi_kasus">Studi Kasus</option>
-            </select>
-        </div>
+                            <!-- Title -->
+                            <div>
+                                <x-input-label for="title" :value="__('Judul Materi/Kuis')" />
+                                <x-text-input id="title" class="block mt-1 w-full" type="text" name="title" :value="old('title')" required />
+                                <x-input-error :messages="$errors->get('title')" class="mt-2" />
+                            </div>
+                        </div>
 
-        <div style="margin-bottom: 1rem;">
-            <label for="content" style="display: block; margin-bottom: 0.5rem;">Konten (untuk tipe materi)</label>
-            <textarea name="content" id="content" rows="10" style="width: 100%; padding: 0.5rem;">{{ old('content') }}</textarea>
-        </div>
 
-        <div>
-            <button type="submit" style="background-color: #28a745; color: white; padding: 0.75rem 1.5rem; border: none; cursor: pointer;">Simpan</button>
+                        <!-- Content -->
+                        <div class="mt-4">
+                            <x-input-label for="content" :value="__('Konten (Bisa berisi HTML)')" />
+                            <textarea id="content" name="content" rows="10" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">{{ old('content') }}</textarea>
+                            <x-input-error :messages="$errors->get('content')" class="mt-2" />
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <!-- Type -->
+                            <div>
+                                <x-input-label for="type" :value="__('Tipe')" />
+                                <select name="type" id="type" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+                                    <option value="materi" {{ old('type') == 'materi' ? 'selected' : '' }}>Materi</option>
+                                    <option value="kuis" {{ old('type') == 'kuis' ? 'selected' : '' }}>Kuis</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('type')" class="mt-2" />
+                            </div>
+
+                            <!-- XP Reward -->
+                            <div>
+                                <x-input-label for="xp_reward" :value="__('XP Reward')" />
+                                <x-text-input id="xp_reward" class="block mt-1 w-full" type="number" name="xp_reward" :value="old('xp_reward', 0)" required />
+                                <x-input-error :messages="$errors->get('xp_reward')" class="mt-2" />
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end mt-6">
+                             <a href="{{ route('admin.lessons.index') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                                Batal
+                            </a>
+                            <x-primary-button class="ml-4">
+                                {{ __('Simpan') }}
+                            </x-primary-button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-    </form>
-</div>
+    </div>
+</x-admin-layout>

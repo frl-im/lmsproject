@@ -12,8 +12,17 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                // Kita ganti font bawaan jadi Nunito yang lebih bulat
+                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                // Palet Warna Gamifikasi Kita
+                'game-primary': '#4A90E2',   // Biru Utama
+                'game-secondary': '#F5A623', // Kuning/Emas
+                'game-success': '#7ED321',   // Hijau XP
+                'game-bg': '#F4F8FC',        // Background
+                'game-card': '#FFFFFF',      // Putih Kartu
+            }
         },
     },
 

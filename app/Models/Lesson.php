@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Lesson extends Model
 {
@@ -13,19 +12,20 @@ class Lesson extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'module_id',
         'title',
         'content',
         'type',
+        'xp_reward',
     ];
 
     /**
-     * Sebuah Lesson dimiliki oleh satu Module.
+     * Get the module that owns the lesson.
      */
-    public function module(): BelongsTo
+    public function module()
     {
         return $this->belongsTo(Module::class);
     }

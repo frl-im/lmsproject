@@ -6,62 +6,91 @@ use App\Http\Controllers\Controller;
 use App\Models\Lesson;
 use App\Models\Module;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class LessonController extends Controller
 {
-    public function index(Module $module)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $lessons = $module->lessons()->paginate(10);
-        return view('admin.lessons.index', compact('module', 'lessons'));
+        $lessons = Lesson::with('module.course')->latest()->paginate(10);
+        return view('admin.lessons.index', compact('lessons'));
     }
 
-    public function create(Module $module)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
-        return view('admin.lessons.create', compact('module'));
+        $modules = Module::with('course')->get();
+        return view('admin.lessons.create', compact('modules'));
     }
 
-    public function store(Request $request, Module $module)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'type' => 'required|in:materi,kuis,studi_kasus',
-            'content' => 'nullable|string',
+            'module_id' => 'required|exists:modules,id',
+            'content' => 'required|string',
+            'type' => ['required', Rule::in(['materi', 'kuis'])],
+            'xp_reward' => 'required|integer|min:0',
         ]);
 
-        $module->lessons()->create($request->all());
+        Lesson::create($request->all());
 
-        return redirect()->route('admin.modules.lessons.index', $module)
-                         ->with('success', 'Lesson berhasil ditambahkan!');
+        return redirect()->route('admin.lessons.index')
+                         ->with('success', 'Materi/Kuis berhasil dibuat.');
     }
 
-  public function edit(Lesson $lesson) // Kita akan gunakan shallow binding
-{
-    // Ambil module dari relasi
-    $module = $lesson->module;
+    /**
+     * Display the specified resource.
+     */
+    public function show(Lesson $lesson)
+    {
+        return redirect()->route('admin.lessons.edit', $lesson);
+    }
 
-    return view('admin.lessons.edit', compact('module', 'lesson'));
-}
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Lesson $lesson)
+    {
+        $modules = Module::with('course')->get();
+        return view('admin.lessons.edit', compact('lesson', 'modules'));
+    }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Lesson $lesson)
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'type' => 'required|in:materi,kuis,studi_kasus',
-            'content' => 'nullable|string',
+            'module_id' => 'required|exists:modules,id',
+            'content' => 'required|string',
+            'type' => ['required', Rule::in(['materi', 'kuis'])],
+            'xp_reward' => 'required|integer|min:0',
         ]);
 
         $lesson->update($request->all());
 
-        return redirect()->route('admin.modules.lessons.index', $lesson->module)
-                         ->with('success', 'Lesson berhasil diperbarui!');
+        return redirect()->route('admin.lessons.index')
+                         ->with('success', 'Materi/Kuis berhasil diperbarui.');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Lesson $lesson)
     {
-        $module = $lesson->module; // Simpan module sebelum lesson dihapus
         $lesson->delete();
 
-        return redirect()->route('admin.modules.lessons.index', $module)
-                         ->with('success', 'Lesson berhasil dihapus!');
+        return redirect()->route('admin.lessons.index')
+                         ->with('success', 'Materi/Kuis berhasil dihapus.');
     }
 }

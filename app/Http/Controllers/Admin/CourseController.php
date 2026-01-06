@@ -32,15 +32,13 @@ class CourseController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
         ]);
 
-        Course::create([
-            'title' => $request->title,
-            'description' => $request->description,
-        ]);
+        Course::create($request->all());
 
-        return redirect()->route('admin.courses.index')->with('success', 'Course berhasil ditambahkan!');
+        return redirect()->route('admin.courses.index')
+                         ->with('success', 'Kursus berhasil dibuat.');
     }
 
     /**
@@ -48,7 +46,8 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        //
+        // Redirect to edit view since showing is not primary
+        return redirect()->route('admin.courses.edit', $course);
     }
 
     /**
@@ -66,15 +65,13 @@ class CourseController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
         ]);
 
-        $course->update([
-            'title' => $request->title,
-            'description' => $request->description,
-        ]);
+        $course->update($request->all());
 
-        return redirect()->route('admin.courses.index')->with('success', 'Course berhasil diperbarui!');
+        return redirect()->route('admin.courses.index')
+                         ->with('success', 'Kursus berhasil diperbarui.');
     }
 
     /**
@@ -83,6 +80,8 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         $course->delete();
-        return redirect()->route('admin.courses.index')->with('success', 'Course berhasil dihapus!');
+
+        return redirect()->route('admin.courses.index')
+                         ->with('success', 'Kursus berhasil dihapus.');
     }
 }

@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lessons', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('module_id')->constrained()->onDelete('cascade'); // INI KUNCINYA
-    $table->string('title');
-    $table->longText('content')->nullable();
-    $table->enum('type', ['materi', 'kuis', 'studi_kasus']);
-    // ... kolom lainnya ...
-    $table->timestamps();
-});
+            $table->id();
+            $table->foreignId('module_id')->constrained()->onDelete('cascade');
+            $table->string('title');
+            $table->text('content');
+            $table->enum('type', ['materi', 'kuis'])->default('materi');
+            $table->integer('xp_reward')->default(0);
+            $table->timestamps();
+        });
     }
 
     /**

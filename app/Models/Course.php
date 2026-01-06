@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
@@ -21,9 +20,9 @@ class Course extends Model
     ];
 
     /**
-     * Sebuah Course memiliki banyak Module.
+     * Get the modules for the course.
      */
-    public function modules(): HasMany
+    public function modules()
     {
         return $this->hasMany(Module::class);
     }

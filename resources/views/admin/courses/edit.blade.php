@@ -1,32 +1,43 @@
-<div style="font-family: sans-serif; padding: 2rem;">
-    <h1>Edit Course: {{ $course->title }}</h1>
+<x-admin-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Edit Kursus: ') . $course->title }}
+        </h2>
+    </x-slot>
 
-    @if ($errors->any())
-        <div style="background-color: #f8d7da; color: #721c24; padding: 1rem; margin-bottom: 1rem; border: 1px solid #f5c6cb; border-radius: 5px;">
-            <strong>Error! Terdapat masalah dengan input Anda.</strong>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <form action="{{ route('admin.courses.update', $course) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        
+                        <!-- Title -->
+                        <div>
+                            <x-input-label for="title" :value="__('Judul Kursus')" />
+                            <x-text-input id="title" class="block mt-1 w-full" type="text" name="title" :value="old('title', $course->title)" required autofocus />
+                            <x-input-error :messages="$errors->get('title')" class="mt-2" />
+                        </div>
 
-    <form action="{{ route('admin.courses.update', $course) }}" method="POST">
-        @csrf
-        @method('PUT')
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <x-input-label for="description" :value="__('Deskripsi')" />
+                            <textarea id="description" name="description" rows="4" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">{{ old('description', $course->description) }}</textarea>
+                            <x-input-error :messages="$errors->get('description')" class="mt-2" />
+                        </div>
 
-        <div style="margin-bottom: 1rem;">
-            <label for="title" style="display: block; margin-bottom: 0.5rem;">Judul Course</label>
-            <input type="text" id="title" name="title" value="{{ old('title', $course->title) }}" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" required>
+                        <div class="flex items-center justify-end mt-4">
+                            <a href="{{ route('admin.courses.index') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                                Batal
+                            </a>
+                            <x-primary-button class="ml-4">
+                                {{ __('Perbarui Kursus') }}
+                            </x-primary-button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div style="margin-bottom: 1rem;">
-            <label for="description" style="display: block; margin-bottom: 0.5rem;">Deskripsi</label>
-            <textarea id="description" name="description" rows="5" style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" required>{{ old('description', $course->description) }}</textarea>
-        </div>
-        <div>
-            <button type="submit" style="background-color: #28a745; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 5px; cursor: pointer;">Update</button>
-            <a href="{{ route('admin.courses.index') }}" style="margin-left: 1rem; color: #6c757d;">Batal</a>
-        </div>
-    </form>
-</div>
+    </div>
+</x-admin-layout>

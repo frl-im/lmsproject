@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('experience')->default(0)->after('remember_token');
-            $table->unsignedBigInteger('points')->default(0)->after('experience');
+            $table->boolean('is_admin')->default(false)->after('remember_token');
         });
     }
 
@@ -23,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['experience', 'points']);
+            $table->dropColumn('is_admin');
         });
     }
 };

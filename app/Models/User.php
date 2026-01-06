@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -23,6 +24,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'experience',
+        'points',
+        'is_admin',
     ];
 
     /**
@@ -55,6 +59,22 @@ class User extends Authenticatable
     public function userProgresses(): HasMany
     {
         return $this->hasMany(UserProgress::class);
+    }
+
+    /**
+     * The badges that belong to the user.
+     */
+    public function badges(): BelongsToMany
+    {
+        return $this->belongsToMany(Badge::class);
+    }
+
+    /**
+     * The courses that a user is enrolled in.
+     */
+    public function courses(): BelongsToMany
+    {
+        return $this->belongsToMany(Course::class, 'user_progress')->withTimestamps()->distinct();
     }
     
 }

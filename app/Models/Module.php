@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Module extends Model
 {
@@ -14,20 +12,25 @@ class Module extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'course_id',
         'title',
-        'order',
     ];
 
-    public function course(): BelongsTo
+    /**
+     * Get the course that owns the module.
+     */
+    public function course()
     {
         return $this->belongsTo(Course::class);
     }
 
-    public function lessons(): HasMany
+    /**
+     * Get the lessons for the module.
+     */
+    public function lessons()
     {
         return $this->hasMany(Lesson::class);
     }
