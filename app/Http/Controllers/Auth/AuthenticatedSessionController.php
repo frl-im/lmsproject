@@ -24,6 +24,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function createAdmin(): View
     {
+        session(['admin_login' => true]);
         return view('auth.admin-login');
     }
 
@@ -32,15 +33,17 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        Auth::logout();
+
         $request->authenticate();
 
         $request->session()->regenerate();
 
         if ($request->user()->is_admin) {
-            return redirect()->intended(route('admin.dashboard', absolute: false));
+            return redirect(route('admin.dashboard', absolute: false));
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect(route('dashboard', absolute: false));
     }
 
     /**
@@ -48,11 +51,17 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $wasAdmin = $request->session()->get('admin_login', false);
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
 
         $request->session()->regenerateToken();
+
+        if ($wasAdmin) {
+            return redirect()->route('admin.login');
+        }
 
         return redirect('/');
     }

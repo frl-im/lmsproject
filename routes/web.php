@@ -45,6 +45,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // 3. Rute Admin (Grup dengan Prefix dan Nama)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('admin.dashboard');
+    });
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     
     // CRUD Resources untuk Admin
@@ -55,7 +58,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 // Rute login khusus admin
 Route::get('admin/login', [AuthenticatedSessionController::class, 'createAdmin'])
-                ->middleware('guest')
                 ->name('admin.login');
 
 // Mengimpor rute otentikasi bawaan Laravel Breeze
