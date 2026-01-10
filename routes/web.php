@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
 use App\Http\Controllers\Admin\LessonController as AdminLessonController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CompletionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Tampilan Materi/Kuis
     Route::get('/lessons/{lesson}', [LessonController::class, 'show'])->name('lessons.show');
-    Route::post('/lessons/{lesson}/complete', [LessonController::class, 'complete'])->name('lessons.complete');
+    Route::post('/lessons/{lesson}/complete', [CompletionController::class, 'completeLesson'])->name('lessons.complete');
 
     // Papan Peringkat (Leaderboard)
     Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
