@@ -52,4 +52,20 @@ class UserProgress extends Model
     {
         return $this->belongsTo(Lesson::class);
     }
+
+    /**
+     * Scope to get completed lessons only.
+     */
+    public function scopeCompleted($query)
+    {
+        return $query->whereNotNull('completed_at');
+    }
+
+    /**
+     * Scope to get for a specific user.
+     */
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
 }
