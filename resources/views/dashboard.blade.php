@@ -17,6 +17,56 @@
                     <p class="text-xs text-gray-600 dark:text-gray-400 uppercase font-bold">Points</p>
                     <p class="text-2xl font-black text-green-500">{{ Auth::user()->points ?? 0 }}</p>
                 </div>
+                <div class="w-1 h-10 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
+                <!-- Profile Dropdown -->
+                <div class="relative">
+                    <button onclick="toggleDropdown()" class="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
+                        <div class="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center">
+                            <span class="text-sm font-black">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                        </div>
+                        <span class="text-sm hidden sm:inline">{{ Auth::user()->name }}</span>
+                        <svg id="dropdownIcon" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-xl z-50 border border-gray-200 dark:border-slate-700">
+                        <div class="px-4 py-3 border-b border-gray-200 dark:border-slate-700">
+                            <p class="text-sm font-bold text-gray-900 dark:text-white">{{ Auth::user()->name }}</p>
+                            <p class="text-xs text-gray-600 dark:text-gray-400">{{ Auth::user()->email }}</p>
+                        </div>
+                        
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
+                            <span>👤 Profil Saya</span>
+                        </a>
+                        
+                        <form method="POST" action="{{ route('logout') }}" class="block">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold">
+                                <span>🚪 Logout</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <script>
+                    function toggleDropdown() {
+                        const menu = document.getElementById('dropdownMenu');
+                        const icon = document.getElementById('dropdownIcon');
+                        menu.classList.toggle('hidden');
+                        icon.classList.toggle('rotate-180');
+                    }
+                    
+                    // Tutup dropdown ketika klik di luar
+                    document.addEventListener('click', function(event) {
+                        const dropdown = document.querySelector('.relative');
+                        if (!dropdown.contains(event.target)) {
+                            document.getElementById('dropdownMenu').classList.add('hidden');
+                            document.getElementById('dropdownIcon').classList.remove('rotate-180');
+                        }
+                    });
+                </script>
             </div>
         </div>
     </x-slot>

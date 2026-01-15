@@ -14,46 +14,12 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            'primary': '#5E72E4',
-                            'primary-light': '#E7EFFF',
-                            'success': '#10B981',
-                            'warning': '#F59E0B',
-                            'danger': '#EF4444',
-                            'duolingo-green': '#1CB687',
-                            'duolingo-blue': '#1F9EDD',
-                            'duolingo-orange': '#FFAB40',
-                        },
-                        fontFamily: {
-                            'poppins': ['Poppins', 'sans-serif'],
-                        }
-                    }
-                }
-            }
-            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark')
-            }
-        </script>
-        {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-poppins antialiased bg-gray-50 dark:bg-gray-900">
-        <div class="flex min-h-screen">
-            <!-- Sidebar Navigation -->
-            @include('layouts.sidebar-navigation')
-
+        <div class="flex min-h-screen flex-col">
             <!-- Main Content -->
             <div class="flex-1 flex flex-col">
-                <!-- Top Bar -->
-                @include('layouts.top-bar')
-
                 <!-- Page Content -->
                 <main class="flex-1 overflow-auto">
                     {{ $slot }}
