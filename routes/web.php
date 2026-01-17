@@ -64,7 +64,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
     Route::get('/lessons/{lesson}/quiz', [QuizController::class, 'show'])
         ->name('quiz.show');
 
-    Route::post('/quiz/submit', [QuizController::class, 'submit'])
+    Route::post('/lessons/{lesson}/quiz/submit', [QuizController::class, 'submit'])
         ->name('quiz.submit');
 
     // Leaderboard

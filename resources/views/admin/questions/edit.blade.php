@@ -1,22 +1,111 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
+            Edit Soal: {{ $lesson->title }}
+        </h2>
+    </x-slot>
 
-<h2>Edit Soal</h2>
+    <div class="py-12">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
 
-<form action="/admin/quiz/{{ $question->id }}" method="POST">
-    @csrf
-    @method('PUT')
+                    @if($errors->any())
+                        <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                            <ul class="list-disc list-inside">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-    <input type="text" name="question" value="{{ $question->question }}"><br>
-    <input type="text" name="option_a" value="{{ $question->option_a }}"><br>
-    <input type="text" name="option_b" value="{{ $question->option_b }}"><br>
-    <input type="text" name="option_c" value="{{ $question->option_c }}"><br>
-    <input type="text" name="option_d" value="{{ $question->option_d }}"><br>
+                    <form action="{{ route('admin.quiz.update', $question) }}" method="POST" class="space-y-6">
+                        @csrf
+                        @method('PUT')
 
-    <select name="correct_answer">
-        <option value="a" {{ $question->correct_answer == 'a' ? 'selected' : '' }}>A</option>
-        <option value="b" {{ $question->correct_answer == 'b' ? 'selected' : '' }}>B</option>
-        <option value="c" {{ $question->correct_answer == 'c' ? 'selected' : '' }}>C</option>
-        <option value="d" {{ $question->correct_answer == 'd' ? 'selected' : '' }}>D</option>
-    </select>
+                        <!-- Pertanyaan -->
+                        <div>
+                            <label for="question" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Pertanyaan <span class="text-red-500">*</span>
+                            </label>
+                            <textarea id="question" name="question" rows="4" 
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                                required>{{ old('question', $question->question) }}</textarea>
+                            @error('question')
+                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-    <button type="submit">Update</button>
-</form>
+                        <!-- Opsi Jawaban -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @php 
+                                $options = [
+                                    'A' => 'option_a',
+                                    'B' => 'option_b',
+                                    'C' => 'option_c',
+                                    'D' => 'option_d'
+                                ];
+                            @endphp
+                            
+                            @foreach($options as $label => $field)
+                                <div>
+                                    <label for="{{ $field }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Opsi {{ $label }} <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="{{ $field }}" name="{{ $field }}"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                                        required value="{{ old($field, $question->$field) }}">
+                                    @error($field)
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Jawaban Benar & Poin -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="correct_answer" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Jawaban Benar <span class="text-red-500">*</span>
+                                </label>
+                                <select id="correct_answer" name="correct_answer"
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                    <option value="">-- Pilih Jawaban --</option>
+                                    <option value="A" @selected(old('correct_answer', $question->correct_answer) == 'A')>A</option>
+                                    <option value="B" @selected(old('correct_answer', $question->correct_answer) == 'B')>B</option>
+                                    <option value="C" @selected(old('correct_answer', $question->correct_answer) == 'C')>C</option>
+                                    <option value="D" @selected(old('correct_answer', $question->correct_answer) == 'D')>D</option>
+                                </select>
+                                @error('correct_answer')
+                                    <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="point" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Poin (Opsional)
+                                </label>
+                                <input type="number" id="point" name="point" min="1" 
+                                    value="{{ old('point', $question->point ?? 10) }}"
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex gap-4 pt-6">
+                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition">
+                                Update Soal
+                            </button>
+                            <a href="{{ route('admin.quiz.index', $question->lesson) }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition">
+                                Batal
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

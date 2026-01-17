@@ -13,11 +13,21 @@ class AuthenticatedSessionController extends Controller
 {
     public function create(): View
     {
+        // Jika user sudah login dan admin, redirect ke admin dashboard
+        if (Auth::check() && Auth::user()->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+        
         return view('auth.login');
     }
 
     public function createAdmin(): View
     {
+        // Jika user sudah login dan admin, redirect ke admin dashboard
+        if (Auth::check() && Auth::user()->is_admin) {
+            return redirect()->route('admin.dashboard');
+        }
+        
         return view('auth.admin-login');
     }
 
@@ -26,11 +36,12 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        // Routing berbasis role
         if ($request->user()->is_admin) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->intended(route('admin.dashboard'));
         }
 
-        return redirect()->route('dashboard');
+        return redirect()->intended(route('dashboard'));
     }
 
     public function destroy(Request $request): RedirectResponse
