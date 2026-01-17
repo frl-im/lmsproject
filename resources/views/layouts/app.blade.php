@@ -30,18 +30,32 @@
                 @auth
                 <div class="relative">
                     <button id="userMenuButton"
-                        class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none">
-                        {{ Auth::user()->name }}
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
+                    class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none">
+
+                    <div class="w-8 h-8 min-w-[2rem] min-h-[2rem] rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold leading-none shrink-0">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </div>
+
+                    <span>{{ Auth::user()->name }}</span>
+
+                    <svg id="dropdownArrow"
+                        class="w-4 h-4 transform transition-transform duration-200"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 9l-7 7-7-7" />
+                    </svg>
+
+
+                </button>
+
 
                     <!-- DROPDOWN -->
                     <div id="userMenu"
-                        class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50">
-                        
+                        class="absolute right-0 mt-3 w-44 origin-top-right
+                            opacity-0 scale-95 pointer-events-none
+                            bg-white dark:bg-gray-700 rounded-xl shadow-lg z-50
+                            transform transition-all duration-200 ease-out">
+          
                         <a href="{{ route('profile.edit') }}"
                            class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
                             Profil
@@ -76,13 +90,39 @@
         document.addEventListener('DOMContentLoaded', function () {
             const btn = document.getElementById('userMenuButton');
             const menu = document.getElementById('userMenu');
+            const arrow = document.getElementById('dropdownArrow');
 
-            if (btn) {
-                btn.addEventListener('click', function () {
-                    menu.classList.toggle('hidden');
-                });
-            }
+            if (!btn || !menu || !arrow) return;
+
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+
+                const isOpen = menu.classList.contains('opacity-100');
+
+                if (isOpen) {
+                    // tutup dropdown
+                    menu.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+                    menu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+
+                    arrow.classList.remove('rotate-180');
+                } else {
+                    // buka dropdown
+                    menu.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                    menu.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
+
+                    arrow.classList.add('rotate-180');
+                }
+            });
+
+            // klik di luar → tutup
+            document.addEventListener('click', function () {
+                menu.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+                menu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+
+                arrow.classList.remove('rotate-180');
+            });
         });
         </script>
+
     </body>
 </html>

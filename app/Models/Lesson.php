@@ -40,6 +40,13 @@ class Lesson extends Model
         return $this->hasMany(UserProgress::class);
     }
 
+
+     public function questions(): HasMany
+    {
+        return $this->hasMany(Question::class);
+    }
+
+    
     /**
      * Check if a user has completed this lesson.
      */
