@@ -27,6 +27,10 @@ class UserProgress extends Model
         'course_id',
         'lesson_id',
         'completed_at',
+        'is_completed',
+        'quiz_score',
+        'quiz_attempts',
+        'xp_awarded',
     ];
 
     /**
@@ -67,5 +71,32 @@ class UserProgress extends Model
     public function scopeForUser($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Check if XP has already been awarded for this progress record.
+     */
+    public function hasXPBeenAwarded(): bool
+    {
+        return $this->xp_awarded === true || $this->xp_awarded === 1;
+    }
+
+    /**
+     * Mark XP as awarded.
+     */
+    public function markXPAsAwarded(): void
+    {
+        $this->update(['xp_awarded' => true]);
+    }
+
+    /**
+     * Check if lesson has been completed before.
+     */
+    public static function hasUserCompletedLesson($userId, $lessonId): bool
+    {
+        return self::where('user_id', $userId)
+            ->where('lesson_id', $lessonId)
+            ->where('is_completed', true)
+            ->exists();
     }
 }

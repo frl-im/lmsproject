@@ -27,6 +27,7 @@ class User extends Authenticatable
         'experience',
         'points',
         'is_admin',
+        'is_premium',
     ];
 
     /**
@@ -51,7 +52,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-     public function projectSubmissions(): HasMany
+
+    public function projectSubmissions(): HasMany
     {
         return $this->hasMany(ProjectSubmission::class);
     }
@@ -59,6 +61,11 @@ class User extends Authenticatable
     public function userProgresses(): HasMany
     {
         return $this->hasMany(UserProgress::class);
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class);
     }
 
     /**
@@ -76,5 +83,44 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Course::class, 'user_progress')->withTimestamps()->distinct();
     }
-    
+
+    /**
+     * Check if user is admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin === true || $this->is_admin === 1;
+    }
+
+    /**
+     * Check if user is premium.
+     */
+    public function isPremium(): bool
+    {
+        return $this->is_premium === true || $this->is_premium === 1;
+    }
+
+    /**
+     * Upgrade user to premium.
+     */
+    public function upgradeToPremium(): bool
+    {
+        return $this->update(['is_premium' => true]);
+    }
+
+    /**
+     * Add XP to user.
+     */
+    public function addXP($amount = 10): void
+    {
+        $this->increment('experience', $amount);
+    }
+
+    /**
+     * Add points to user.
+     */
+    public function addPoints($amount = 5): void
+    {
+        $this->increment('points', $amount);
+    }
 }

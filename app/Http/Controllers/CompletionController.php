@@ -14,31 +14,36 @@ use Illuminate\Support\Facades\DB;
 class CompletionController extends Controller
 {
     /**
-     * Mark a lesson as complete and award XP.
+     * Mark a lesson as complete and award XP (with anti-farming logic)
      */
     public function completeLesson(Request $request, Lesson $lesson)
     {
-        $user = Auth::user();
-
-        // Check if lesson already completed
-        $existingProgress = UserProgress::where('user_id', $user->id)
-            ->where('lesson_id', $lesson->id)
-            ->first();
-
-        if ($existingProgress && $existingProgress->completed_at) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kamu sudah menyelesaikan lesson ini sebelumnya!',
-            ], 422);
-        }
-
-        // Get course via module
-        $course = $lesson->module->course;
-
         try {
+            $user = Auth::user();
+
+            // Check if lesson already completed (anti-farming)
+            $existingProgress = UserProgress::where('user_id', $user->id)
+                ->where('lesson_id', $lesson->id)
+                ->first();
+
+            // Get course via module
+            $course = $lesson->module->course;
+
             DB::beginTransaction();
 
-            // Create or update progress
+            if ($existingProgress && $existingProgress->is_completed) {
+                // SUDAH PERNAH SUBMIT - Tidak tambah XP
+                DB::commit();
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Latihan selesai (Tanpa Poin Tambahan)',
+                    'already_completed' => true,
+                    'user_experience' => $user->experience,
+                ], 422);
+            }
+
+            // FIRST TIME - Create or update progress
             $progress = UserProgress::updateOrCreate(
                 [
                     'user_id' => $user->id,
@@ -47,12 +52,14 @@ class CompletionController extends Controller
                 [
                     'course_id' => $course->id,
                     'completed_at' => now(),
+                    'is_completed' => true,
+                    'xp_awarded' => true,
                 ]
             );
 
-            // Award XP to user
+            // Award XP to user (only for first time)
             $xpReward = $lesson->xp_reward ?? 10;
-            $user->increment('experience', $xpReward);
+            $user->addXP($xpReward);
 
             DB::commit();
 
@@ -85,25 +92,25 @@ class CompletionController extends Controller
      */
     public function completeModule(Request $request, Module $module)
     {
-        $user = Auth::user();
-
-        // Check if module is already submitted
-        $moduleCompleted = $module->isCompletedByUser($user->id);
-
-        if (!$moduleCompleted) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Selesaikan semua lesson di modul ini terlebih dahulu!',
-                'progress_percentage' => $module->getProgressPercentage($user->id),
-            ], 422);
-        }
-
         try {
+            $user = Auth::user();
+
+            // Check if module is already submitted
+            $moduleCompleted = $module->isCompletedByUser($user->id);
+
+            if (!$moduleCompleted) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selesaikan semua lesson di modul ini terlebih dahulu!',
+                    'progress_percentage' => $module->getProgressPercentage($user->id),
+                ], 422);
+            }
+
             DB::beginTransaction();
 
             // Award bonus XP for module completion
             $moduleBonus = 50;
-            $user->increment('experience', $moduleBonus);
+            $user->addXP($moduleBonus);
 
             DB::commit();
 
@@ -133,25 +140,25 @@ class CompletionController extends Controller
      */
     public function completeCourse(Request $request, Course $course)
     {
-        $user = Auth::user();
-
-        // Check if course is already submitted
-        $courseCompleted = $course->isCompletedByUser($user->id);
-
-        if (!$courseCompleted) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Selesaikan semua lesson di course ini terlebih dahulu!',
-                'progress_percentage' => $course->getProgressPercentage($user->id),
-            ], 422);
-        }
-
         try {
+            $user = Auth::user();
+
+            // Check if course is already submitted
+            $courseCompleted = $course->isCompletedByUser($user->id);
+
+            if (!$courseCompleted) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selesaikan semua lesson di course ini terlebih dahulu!',
+                    'progress_percentage' => $course->getProgressPercentage($user->id),
+                ], 422);
+            }
+
             DB::beginTransaction();
 
             // Award bonus XP for course completion
             $courseBonus = 200;
-            $user->increment('experience', $courseBonus);
+            $user->addXP($courseBonus);
 
             DB::commit();
 
@@ -176,22 +183,29 @@ class CompletionController extends Controller
      */
     public function getCourseProgress(Course $course)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        $totalLessons = $course->lessons()->count();
-        $completedLessons = UserProgress::where('user_id', $user->id)
-            ->whereIn('lesson_id', $course->lessons()->pluck('id'))
-            ->completed()
-            ->count();
+            $totalLessons = $course->lessons()->count();
+            $completedLessons = UserProgress::where('user_id', $user->id)
+                ->whereIn('lesson_id', $course->lessons()->pluck('id'))
+                ->completed()
+                ->count();
 
-        $progressPercentage = $totalLessons > 0 ? ($completedLessons / $totalLessons * 100) : 0;
+            $progressPercentage = $totalLessons > 0 ? ($completedLessons / $totalLessons * 100) : 0;
 
-        return response()->json([
-            'total_lessons' => $totalLessons,
-            'completed_lessons' => $completedLessons,
-            'progress_percentage' => (int)$progressPercentage,
-            'is_completed' => $course->isCompletedByUser($user->id),
-        ]);
+            return response()->json([
+                'total_lessons' => $totalLessons,
+                'completed_lessons' => $completedLessons,
+                'progress_percentage' => (int)$progressPercentage,
+                'is_completed' => $course->isCompletedByUser($user->id),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -199,22 +213,29 @@ class CompletionController extends Controller
      */
     public function getModuleProgress(Module $module)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        $totalLessons = $module->lessons()->count();
-        $completedLessons = UserProgress::where('user_id', $user->id)
-            ->whereIn('lesson_id', $module->lessons()->pluck('id'))
-            ->completed()
-            ->count();
+            $totalLessons = $module->lessons()->count();
+            $completedLessons = UserProgress::where('user_id', $user->id)
+                ->whereIn('lesson_id', $module->lessons()->pluck('id'))
+                ->completed()
+                ->count();
 
-        $progressPercentage = $totalLessons > 0 ? ($completedLessons / $totalLessons * 100) : 0;
+            $progressPercentage = $totalLessons > 0 ? ($completedLessons / $totalLessons * 100) : 0;
 
-        return response()->json([
-            'total_lessons' => $totalLessons,
-            'completed_lessons' => $completedLessons,
-            'progress_percentage' => (int)$progressPercentage,
-            'is_completed' => $module->isCompletedByUser($user->id),
-        ]);
+            return response()->json([
+                'total_lessons' => $totalLessons,
+                'completed_lessons' => $completedLessons,
+                'progress_percentage' => (int)$progressPercentage,
+                'is_completed' => $module->isCompletedByUser($user->id),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -233,3 +254,4 @@ class CompletionController extends Controller
         return $module->isCompletedByUser($userId);
     }
 }
+

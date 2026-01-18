@@ -9,6 +9,9 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\CompletionController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\ConsultController;
 
 // ADMIN CONTROLLERS
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -29,9 +32,12 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
 // ROUTE PUBLIK
 
-    Route::get('/', function () {
-        return view('welcome');
-    });
+    // Landing page (redirect based on auth status)
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+    
+    // Preview lesson untuk guest (teaser)
+    Route::get('/preview/lesson/{lessonId}', [HomeController::class, 'previewLesson'])
+        ->name('preview.lesson');
 
 
 // ROUTE LOGIN ADMIN
@@ -45,7 +51,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
     Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard siswa
-    Route::get('/dashboard', [CourseController::class, 'index'])
+    Route::get('/dashboard', [HomeController::class, 'dashboard'])
         ->name('dashboard');
 
     // Kursus
@@ -71,19 +77,31 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
     Route::get('/leaderboard', [LeaderboardController::class, 'index'])
         ->name('leaderboard.index');
 
-    // Profile (bawaan Breeze)
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+    // Finance / Subscription (BAGIAN 3)
+    Route::prefix('finance')->name('finance.')->group(function () {
+        Route::get('/', [FinanceController::class, 'index'])->name('index');
+        Route::get('/features', [FinanceController::class, 'features'])->name('features');
+        Route::post('/purchase-premium', [FinanceController::class, 'purchasePremium'])->name('purchase');
+        Route::get('/status', [FinanceController::class, 'getSubscriptionStatus'])->name('status');
+    });
 
+    // Consult / Chat (BAGIAN 3)
+    Route::prefix('consult')->name('consult.')->group(function () {
+        Route::get('/', [ConsultController::class, 'index'])->name('index');
+        Route::post('/send', [ConsultController::class, 'sendMessage'])->name('send');
+        Route::get('/messages', [ConsultController::class, 'getMessages'])->name('messages');
+        Route::patch('/messages/{messageId}/read', [ConsultController::class, 'markAsRead'])->name('mark-read');
+        Route::delete('/messages/{messageId}', [ConsultController::class, 'deleteMessage'])->name('delete');
+    });
+
+    });
 
 // ROUTE ADMIN
 
-        Route::middleware(['auth', 'admin'])
-            ->prefix('admin')
-            ->name('admin.')
-            ->group(function () {
+    Route::middleware(['auth', 'verified', 'admin'])
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
 
         // Redirect root admin
         Route::get('/', function () {

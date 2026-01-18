@@ -22,6 +22,7 @@ class Lesson extends Model
         'content',
         'type',
         'xp_reward',
+        'is_free',
     ];
 
     /**

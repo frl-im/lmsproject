@@ -78,7 +78,7 @@
             <div class="flex-1 flex flex-col">
                 <!-- Page Content -->
                 <main class="flex-1 overflow-auto">
-                    {{ $slot }}
+                    @yield('content')
                 </main>
             </div>
         </div>
