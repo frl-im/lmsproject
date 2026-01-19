@@ -13,6 +13,9 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
+    Route::get('login-selector', [AuthenticatedSessionController::class, 'loginSelector'])
+        ->name('login.selector');
+
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 

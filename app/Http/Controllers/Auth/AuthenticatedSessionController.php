@@ -11,6 +11,11 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
+    public function loginSelector(): View
+    {
+        return view('auth.login-selector');
+    }
+
     public function create(): View
     {
         // Jika user sudah login dan admin, redirect ke admin dashboard
