@@ -1,43 +1,41 @@
 <x-guest-layout>
-    <div class="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black dark:from-slate-950 dark:via-black dark:to-black flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="w-full max-w-md">
+    <div class="min-h-screen bg-gradient-to-br from-white to-amber-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-sm">
             <!-- Header Section -->
-            <div class="text-center mb-8">
+            <div class="text-center mb-10">
                 <div class="mb-4">
-                    <span class="text-5xl md:text-6xl">🔐</span>
+                    <span class="text-6xl md:text-7xl inline-block">🔐</span>
                 </div>
-                <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent mb-2">
-                    Admin Panel
+                <h1 class="text-4xl md:text-5xl font-bold text-amber-600 mb-3">
+                    Masuk Admin
                 </h1>
-                <p class="text-gray-300 text-base md:text-lg">
+                <p class="text-gray-600 text-base font-semibold">
                     ⚙️ Area Administrasi LMS
-                </p>
-                <p class="text-gray-500 text-sm mt-2">
-                    Kelola kursus dan pantau siswa
                 </p>
             </div>
 
             <!-- Quick Access Menu -->
-            <div class="bg-gradient-to-r from-amber-900/30 to-orange-900/30 border border-amber-700/50 rounded-xl p-4 mb-6">
-                <div class="grid grid-cols-3 gap-3 text-center text-xs">
+            <div class="bg-amber-50 rounded-xl p-4 mb-8 border-2 border-amber-200">
+                <div class="grid grid-cols-3 gap-4 text-center">
                     <div>
-                        <div class="text-2xl mb-1">📊</div>
-                        <p class="font-semibold text-gray-300">Dashboard</p>
+                        <div class="text-3xl mb-2">📊</div>
+                        <p class="text-xs font-bold text-gray-800">Dashboard</p>
                     </div>
                     <div>
-                        <div class="text-2xl mb-1">📚</div>
-                        <p class="font-semibold text-gray-300">Kursus</p>
+                        <div class="text-3xl mb-2">📚</div>
+                        <p class="text-xs font-bold text-gray-800">Kursus</p>
                     </div>
                     <div>
-                        <div class="text-2xl mb-1">👥</div>
-                        <p class="font-semibold text-gray-300">Siswa</p>
+                        <div class="text-3xl mb-2">👥</div>
+                        <p class="text-xs font-bold text-gray-800">Siswa</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Card Form -->
-            <div class="bg-gradient-to-b from-gray-800 to-gray-900 dark:from-gray-900 dark:to-black rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
-                <div class="px-6 py-8 sm:px-8">
+            <!-- Main Card Form -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-gray-300">
+                <!-- Form Section -->
+                <div class="px-8 py-10">
                     <!-- Session Status -->
                     <x-auth-session-status class="mb-6" :status="session('status')" />
 
@@ -46,12 +44,12 @@
 
                         <!-- Email Address -->
                         <div>
-                            <label for="email" class="block text-sm font-semibold text-gray-200 mb-2">
+                            <label for="email" class="block text-sm font-bold text-gray-800 mb-3">
                                 📧 Email Admin
                             </label>
                             <x-text-input 
                                 id="email" 
-                                class="block w-full px-4 py-3 border-2 border-gray-600 rounded-lg bg-gray-800 text-white placeholder-gray-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-400 transition" 
+                                class="block w-full px-4 py-3 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 font-semibold focus:border-amber-600 focus:ring-2 focus:ring-amber-300 transition" 
                                 type="email" 
                                 name="email" 
                                 :value="old('email')" 
@@ -59,108 +57,115 @@
                                 autofocus 
                                 autocomplete="username"
                                 placeholder="admin@example.com" />
-                            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('email')" class="mt-2 font-semibold text-red-600" />
                         </div>
 
                         <!-- Password -->
                         <div>
-                            <label for="password" class="block text-sm font-semibold text-gray-200 mb-2">
-                                🔑 Password
+                            <label for="password" class="block text-sm font-bold text-gray-800 mb-3">
+                                🔑 Kata Sandi
                             </label>
                             <x-text-input 
                                 id="password" 
-                                class="block w-full px-4 py-3 border-2 border-gray-600 rounded-lg bg-gray-800 text-white placeholder-gray-500 focus:border-amber-500 focus:ring-2 focus:ring-amber-400 transition"
+                                class="block w-full px-4 py-3 border-2 border-gray-400 rounded-lg bg-white text-gray-900 placeholder-gray-500 font-semibold focus:border-amber-600 focus:ring-2 focus:ring-amber-300 transition"
                                 type="password"
                                 name="password"
                                 required 
                                 autocomplete="current-password"
-                                placeholder="Masukkan password" />
-                            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                                placeholder="Masukkan kata sandi" />
+                            <x-input-error :messages="$errors->get('password')" class="mt-2 font-semibold text-red-600" />
                         </div>
 
-                        <!-- Warning Box with Gradient -->
-                        <div class="bg-gradient-to-r from-amber-900/40 to-orange-900/40 border-l-4 border-amber-500 p-4 rounded-lg backdrop-blur">
-                            <p class="text-sm text-amber-100 flex items-center gap-2">
-                                <span class="text-lg">⚠️</span>
-                                <span><strong>Akses Terbatas:</strong> Hanya admin terdaftar yang boleh login di sini.</span>
+                        <!-- Warning Box -->
+                        <div class="bg-red-50 border-2 border-red-300 rounded-lg p-4">
+                            <p class="text-sm font-bold text-red-700 flex items-start gap-3">
+                                <span class="text-xl">⚠️</span>
+                                <span><strong>Perhatian:</strong> Hanya admin terdaftar yang boleh login di sini. Akses tidak sah akan dicatat.</span>
                             </p>
                         </div>
 
+                        <!-- Remember Me -->
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center cursor-pointer">
+                                <input 
+                                    id="remember_me" 
+                                    type="checkbox" 
+                                    class="w-5 h-5 text-amber-600 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-amber-300 cursor-pointer" 
+                                    name="remember">
+                                <span class="ms-3 text-sm font-semibold text-gray-800">
+                                    Ingat saya
+                                </span>
+                            </label>
+                            @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}" class="text-sm font-bold text-amber-600 hover:text-amber-800 transition">
+                                    Lupa password?
+                                </a>
+                            @endif
+                        </div>
+
                         <!-- Submit Button -->
-                        <button type="submit" class="w-full bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 hover:from-amber-700 hover:via-orange-700 hover:to-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-amber-400 dark:focus:ring-amber-600 shadow-lg">
+                        <button type="submit" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-black font-bold py-4 px-4 rounded-xl transition-all transform hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-400 shadow-lg text-base">
                             🚀 Login Admin
                         </button>
 
-                        <!-- Links Section -->
-                        <div class="space-y-2 text-center">
-                            @if (Route::has('password.request'))
-                                <a class="block text-sm text-amber-300 hover:text-amber-200 font-semibold transition duration-200" href="{{ route('password.request') }}">
-                                    🔑 Lupa Password?
-                                </a>
-                            @endif
-
-                            <div class="pt-3 border-t border-gray-600">
-                                <p class="text-gray-400 text-sm mb-2">
-                                    Bukan admin?
-                                </p>
-                                <a href="{{ route('login') }}" class="inline-block text-blue-400 hover:text-blue-300 font-bold transition duration-200">
-                                    👨‍🎓 Login sebagai Siswa →
-                                </a>
-                            </div>
+                        <!-- Student Link -->
+                        <div class="text-center pt-4 border-t-2 border-gray-300">
+                            <p class="text-sm font-semibold text-gray-700 mb-3">
+                                Bukan admin?
+                            </p>
+                            <a href="{{ route('login') }}" class="inline-block text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-6 py-2 rounded-lg transition">
+                                👨‍🎓 Login Siswa
+                            </a>
                         </div>
                     </form>
                 </div>
 
-                <!-- Footer with Quick Links -->
-                <div class="bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-5 sm:px-8 border-t border-gray-600">
-                    <div class="space-y-3">
-                        <p class="text-center text-sm font-semibold text-gray-300">
-                            📋 Quick Admin Actions
-                        </p>
-                        <div class="grid grid-cols-2 gap-2 text-xs">
-                            <a href="#" class="block text-center bg-gray-600 hover:bg-gray-500 text-gray-200 py-2 px-3 rounded transition duration-200">
-                                📊 Dashboard
-                            </a>
-                            <a href="#" class="block text-center bg-gray-600 hover:bg-gray-500 text-gray-200 py-2 px-3 rounded transition duration-200">
-                                👥 Kelola Siswa
-                            </a>
-                        </div>
+                <!-- Quick Actions Section -->
+                <div class="bg-gradient-to-r from-amber-50 to-orange-100 px-8 py-6 border-t-2 border-gray-300">
+                    <p class="text-center text-sm font-bold text-gray-800 mb-4">
+                        📋 Quick Admin Actions
+                    </p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="#" class="block text-center bg-white hover:bg-gray-100 text-gray-800 font-bold py-2 px-3 rounded-lg transition border-2 border-gray-400 text-sm">
+                            📊 Dashboard
+                        </a>
+                        <a href="#" class="block text-center bg-white hover:bg-gray-100 text-gray-800 font-bold py-2 px-3 rounded-lg transition border-2 border-gray-400 text-sm">
+                            👥 Kelola Siswa
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Admin Features Info -->
-            <div class="mt-8 space-y-4">
-                <div class="bg-gray-800/50 dark:bg-gray-900/50 backdrop-blur rounded-lg p-4 border border-gray-700">
-                    <h3 class="text-amber-300 font-bold mb-3 text-sm flex items-center gap-2">
-                        <span>✨</span> Fitur Admin
-                    </h3>
-                    <ul class="space-y-2 text-sm text-gray-300">
-                        <li class="flex items-center gap-2">
-                            <span class="text-amber-400">•</span>
-                            <span>Kelola kursus, modul, dan pelajaran</span>
+            <!-- Admin Features -->
+            <div class="mt-10">
+                <div class="bg-white rounded-xl shadow-md border-2 border-gray-300 p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">✨ Fitur Admin</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start gap-3">
+                            <span class="text-2xl flex-shrink-0">📚</span>
+                            <span class="font-semibold text-gray-800">Kelola kursus, modul, dan pelajaran</span>
                         </li>
-                        <li class="flex items-center gap-2">
-                            <span class="text-amber-400">•</span>
-                            <span>Monitor progress dan statistik siswa</span>
+                        <li class="flex items-start gap-3">
+                            <span class="text-2xl flex-shrink-0">📊</span>
+                            <span class="font-semibold text-gray-800">Monitor progress dan statistik siswa</span>
                         </li>
-                        <li class="flex items-center gap-2">
-                            <span class="text-amber-400">•</span>
-                            <span>Kelola badge, poin, dan leaderboard</span>
+                        <li class="flex items-start gap-3">
+                            <span class="text-2xl flex-shrink-0">🏆</span>
+                            <span class="font-semibold text-gray-800">Kelola badge, poin, dan leaderboard</span>
                         </li>
-                        <li class="flex items-center gap-2">
-                            <span class="text-amber-400">•</span>
-                            <span>Generate laporan dan analitik</span>
+                        <li class="flex items-start gap-3">
+                            <span class="text-2xl flex-shrink-0">📈</span>
+                            <span class="font-semibold text-gray-800">Generate laporan dan analitik lengkap</span>
                         </li>
                     </ul>
                 </div>
+            </div>
 
-                <!-- Home Link -->
-                <div class="text-center">
-                    <a href="/" class="text-gray-500 hover:text-gray-400 text-sm font-semibold transition duration-200">
-                        ← Kembali ke Beranda
-                    </a>
-                </div>
+            <!-- Home Link -->
+            <div class="text-center mt-8">
+                <a href="/" class="text-gray-700 hover:text-amber-600 font-bold transition text-sm">
+                    ← Kembali ke Beranda
+                </a>
             </div>
         </div>
     </div>
