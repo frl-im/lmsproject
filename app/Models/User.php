@@ -114,8 +114,10 @@ class User extends Authenticatable
     public function addXP($amount = 10): void
     {
         $this->increment('experience', $amount);
+        $this->experience += $amount;
+        $this->save();
+        // (Opsional: Cek kenaikan level di sini)
     }
-
     /**
      * Add points to user.
      */
