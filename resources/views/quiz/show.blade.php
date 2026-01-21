@@ -1,16 +1,12 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
-            Kuis: {{ $lesson->title }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+@section('content')
+<div class="py-12 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             
             <!-- Alert untuk hasil quiz -->
             @if(session('quiz_result'))
-                <div class="mb-6">
+                <div class="mb-6" id="quiz-alert">
                     @if(session('passed'))
                         <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-6 rounded">
                             <h3 class="text-lg font-bold mb-2">🎉 Selamat! Kamu Lulus Kuis!</h3>
@@ -47,7 +43,7 @@
 
                 @if(session('passed'))
                     <div class="mb-6">
-                        <a href="{{ route('lessons.show', $lesson) }}" class="text-blue-500 hover:text-blue-700 font-semibold">
+                        <a href="{{ route('lessons.show', ['course' => $lesson->module->course_id, 'lesson' => $lesson->id]) }}" class="text-blue-500 hover:text-blue-700 font-semibold">
                             ← Kembali ke Lesson
                         </a>
                     </div>
@@ -64,7 +60,7 @@
                         Skor Akhir: <strong>{{ $previousAttempt->quiz_score }}%</strong> 
                         | Attempts: {{ $previousAttempt->quiz_attempts ?? 1 }}
                     </p>
-                    <a href="{{ route('lessons.show', $lesson) }}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">
+                    <a href="{{ route('lessons.show', ['course' => $lesson->module->course_id, 'lesson' => $lesson->id]) }}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">
                         Kembali ke Lesson
                     </a>
                 </div>
@@ -125,7 +121,7 @@
                                     <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg transition transform hover:scale-105">
                                         Kirim Jawaban
                                     </button>
-                                    <a href="{{ route('lessons.show', $lesson) }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg transition">
+                                    <a href="{{ route('lessons.show', ['course' => $lesson->module->course_id, 'lesson' => $lesson->id]) }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg transition">
                                         Batal
                                     </a>
                                 </div>
@@ -148,4 +144,108 @@
 
         </div>
     </div>
-</x-app-layout>
+</div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tampilkan Sweet Alert jika ada hasil quiz
+        const quizAlert = document.getElementById('quiz-alert');
+        if (quizAlert) {
+            const isPassed = quizAlert.querySelector('.bg-green-100') !== null;
+            const isOrange = quizAlert.querySelector('.bg-orange-100') !== null;
+            
+            if (isPassed) {
+                const percentage = quizAlert.textContent.match(/(\d+)%/)[1];
+                const correctCount = quizAlert.textContent.match(/(\d+)\/(\d+)/)[1];
+                const totalQuestions = quizAlert.textContent.match(/(\d+)\/(\d+)/)[2];
+                const score = quizAlert.textContent.match(/poin/i) ? 
+                    quizAlert.textContent.split('poin')[0].trim().split(' ').pop() : '0';
+                const xpReward = quizAlert.textContent.match(/(\d+)\s*XP/)[1];
+                
+                Swal.fire({
+                    title: '🎉 Selamat!',
+                    html: `
+                        <p class="text-lg font-semibold mb-4">Kamu Lulus Kuis!</p>
+                        <div class="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg p-6 mb-4">
+                            <div class="mb-3">
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Skor</p>
+                                <p class="text-4xl font-bold text-green-600">${percentage}%</p>
+                            </div>
+                            <div class="text-sm text-gray-700 dark:text-gray-200 mb-3">
+                                <p>${correctCount} dari ${totalQuestions} jawaban benar</p>
+                            </div>
+                            <div class="border-t border-green-300 dark:border-green-700 pt-3">
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Reward</p>
+                                <p class="text-3xl font-bold text-yellow-600">+${xpReward} XP</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 dark:text-gray-300">Lanjutkan ke materi berikutnya! 🚀</p>
+                    `,
+                    icon: 'success',
+                    confirmButtonText: 'Kembali ke Materi',
+                    confirmButtonColor: '#10b981',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '{{ route("lessons.show", ["course" => $lesson->module->course_id, "lesson" => $lesson->id]) }}';
+                    }
+                });
+            } else if (isOrange) {
+                const percentage = quizAlert.textContent.match(/(\d+)%/)[1];
+                const correctCount = quizAlert.textContent.match(/(\d+)\/(\d+)/)[1];
+                const totalQuestions = quizAlert.textContent.match(/(\d+)\/(\d+)/)[2];
+                
+                Swal.fire({
+                    title: '⚠️ Oops!',
+                    html: `
+                        <p class="text-lg font-semibold mb-4">Skor Kurang</p>
+                        <div class="bg-gradient-to-r from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30 rounded-lg p-6 mb-4">
+                            <div class="mb-3">
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Skor Anda</p>
+                                <p class="text-4xl font-bold text-orange-600">${percentage}%</p>
+                            </div>
+                            <div class="text-sm text-gray-700 dark:text-gray-200">
+                                <p>${correctCount} dari ${totalQuestions} jawaban benar</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 dark:text-gray-300 mb-3">Untuk lulus, kamu butuh minimal <strong>70%</strong> jawaban benar.</p>
+                        <p class="text-gray-600 dark:text-gray-400">Jangan putus asa! Coba lagi dan pelajari kembali materinya. 💪</p>
+                    `,
+                    icon: 'warning',
+                    confirmButtonText: 'Coba Lagi',
+                    confirmButtonColor: '#f97316',
+                    showCancelButton: true,
+                    cancelButtonText: 'Kembali ke Materi',
+                    cancelButtonColor: '#6b7280'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.reload();
+                    } else if (result.dismiss) {
+                        window.location.href = '{{ route("lessons.show", ["course" => $lesson->module->course_id, "lesson" => $lesson->id]) }}';
+                    }
+                });
+            }
+        }
+        
+        // Handle quiz form submission
+        const quizForm = document.getElementById('quiz-form');
+        if (quizForm) {
+            quizForm.addEventListener('submit', function(e) {
+                // Show loading alert
+                Swal.fire({
+                    title: '⏳ Mengirim Jawaban...',
+                    html: 'Mohon tunggu sebentar.',
+                    icon: 'info',
+                    allowOutsideClick: false,
+                    didOpen: (modal) => {
+                        Swal.showLoading();
+                    }
+                });
+            });
+        }
+    });
+</script>
+@endpush
+@endsection

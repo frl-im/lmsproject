@@ -58,6 +58,15 @@
                         <a href="{{ route('admin.lessons.create') }}" class="p-4 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 font-medium">
                             + Tambah Materi/Kuis Baru
                         </a>
+                        <a href="{{ route('admin.lessons.index') }}" class="p-4 bg-cyan-50 text-cyan-700 rounded-lg hover:bg-cyan-100 font-medium">
+                            📝 Kelola Soal Kuis
+                        </a>
+                        <a href="{{ route('admin.users.progress.index') }}" class="p-4 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 font-medium">
+                            📊 Pantau Progress User
+                        </a>
+                        <a href="{{ route('admin.rankings') }}" class="p-4 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 font-medium">
+                            🏆 Lihat Ranking
+                        </a>
                     </div>
                 </div>
             </div>

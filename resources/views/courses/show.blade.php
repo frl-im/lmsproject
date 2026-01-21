@@ -1,17 +1,33 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ $course->title }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 md:p-8">
-                    <div class="mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $course->title }}</h3>
-                        <p class="mt-2 text-gray-600 dark:text-gray-400">{{ $course->description }}</p>
+@section('content')
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12">
+    <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+            
+            <!-- Header Course -->
+            <div class="mb-8">
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-8 md:p-12 text-white">
+                        <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ $course->title }}</h1>
+                        <p class="text-lg text-blue-100 mb-6">{{ $course->description }}</p>
+                        
+                        <!-- Progress Stats -->
+                        @if (Auth::user())
+                            <div class="grid grid-cols-3 gap-4 mt-8 pt-8 border-t border-blue-400">
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold">{{ $course->modules->count() }}</div>
+                                    <div class="text-blue-100 text-sm">Bab/Module</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold">{{ $course->modules->sum(fn($m) => $m->lessons->count()) }}</div>
+                                    <div class="text-blue-100 text-sm">Materi Total</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl font-bold">0%</div>
+                                    <div class="text-blue-100 text-sm">Progres</div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="space-y-8">
@@ -50,4 +66,5 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection

@@ -16,7 +16,7 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login-selector');
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         // Jika user sudah login dan admin, redirect ke admin dashboard
         if (Auth::check() && Auth::user()->is_admin) {
@@ -26,7 +26,7 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-    public function createAdmin(): View
+    public function createAdmin(): View|RedirectResponse
     {
         // Jika user sudah login dan admin, redirect ke admin dashboard
         if (Auth::check() && Auth::user()->is_admin) {

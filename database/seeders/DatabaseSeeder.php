@@ -32,5 +32,8 @@ class DatabaseSeeder extends Seeder
 
         // Seed courses and related data
         $this->call(CourseSeeder::class);
+        
+        // Seed sample quiz questions
+        $this->call(QuestionSeeder::class);
     }
 }

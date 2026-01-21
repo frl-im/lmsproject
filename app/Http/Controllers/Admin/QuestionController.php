@@ -16,7 +16,7 @@ class QuestionController extends Controller
     {
         // Pastikan lesson tipe kuis
         if ($lesson->type !== 'kuis') {
-            return redirect()->route('admin.lessons.show', $lesson)
+            return redirect()->route('admin.lessons.edit', $lesson)
                 ->with('error', 'Lesson ini bukan tipe kuis');
         }
 
@@ -31,7 +31,7 @@ class QuestionController extends Controller
     {
         // Pastikan lesson tipe kuis
         if ($lesson->type !== 'kuis') {
-            return redirect()->route('admin.lessons.show', $lesson)
+            return redirect()->route('admin.lessons.edit', $lesson)
                 ->with('error', 'Lesson ini bukan tipe kuis');
         }
 

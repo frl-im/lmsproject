@@ -80,6 +80,11 @@ class User extends Authenticatable
         return $this->hasMany(DailyMission::class);
     }
 
+    public function quizResults(): HasMany
+    {
+        return $this->hasMany(QuizResult::class);
+    }
+
     /**
      * The badges that belong to the user.
      */
@@ -123,9 +128,12 @@ class User extends Authenticatable
     /**
      * Add XP to user.
      */
-    public function addXP($amount = 10): void
+    public function addXP($amount)
     {
-        $this->increment('experience', $amount);
+        $this->experience = ($this->experience ?? 0) + $amount;
+        $this->save();
+        
+        // Cek kenaikan level, dsb (opsional)
     }
 
     /**
@@ -135,6 +143,7 @@ class User extends Authenticatable
     {
         $this->increment('points', $amount);
     }
+<<<<<<< HEAD
 
     /**
      * Add payment to user.
@@ -144,3 +153,22 @@ class User extends Authenticatable
         return $this->hasMany(Payment::class);
     }
 }
+=======
+   public function lessons()
+    {
+        // Menggunakan tabel pivot 'user_progress'
+        // Sesuaikan 'lesson_id' dan 'user_id' jika nama kolom berbeda
+        return $this->belongsToMany(Lesson::class, 'user_progress', 'user_id', 'lesson_id')
+                    ->withPivot('is_completed', 'xp_awarded', 'completed_at')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get the certificates awarded to this user
+     */
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+}
+>>>>>>> cfa7e365e461ec6d1d483386712e22751bc8f6c2

@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\Lesson;
-use App\Models\UserProgress;
+use App\Models\UserProgress; // Tambahkan ini agar complete() tidak error
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth; // Tambahkan ini agar Auth::user() tidak error
+use Illuminate\Support\Facades\DB;
 
 class LessonController extends Controller
 {
-    public function show(Lesson $lesson)
+    /**
+     * Menampilkan halaman lesson/materi.
+     * Kita tambahkan parameter $course_id di depan karena route-nya nested resource.
+     */
+    public function show($course_id, Lesson $lesson)
     {
+        // $course_id menangkap parameter pertama dari URL (/courses/{1}/...)
+        // $lesson menangkap parameter kedua dan otomatis di-convert jadi Model Lesson
+
         $lesson->load(['module.course']);
         
         $user = Auth::user();
@@ -19,6 +28,9 @@ class LessonController extends Controller
         return view('lessons.show', compact('lesson', 'badges'));
     }
 
+    /**
+     * Menandai materi selesai & memberi XP
+     */
     public function complete(Request $request, Lesson $lesson)
     {
         $user = Auth::user();
@@ -26,7 +38,6 @@ class LessonController extends Controller
         // Cek sudah selesai belum
         $exists = UserProgress::where('user_id', $user->id)
             ->where('lesson_id', $lesson->id)
-            ->where('is_completed', true)
             ->exists();
 
         if ($exists) {
@@ -45,6 +56,8 @@ class LessonController extends Controller
 
         // Tambah XP
         $xp = $lesson->xp_reward ?? 10;
+        
+        // Cek apakah method addXP tersedia di model User
         if (method_exists($user, 'addXP')) {
             $user->addXP($xp);
         } else {
