@@ -9,31 +9,45 @@ use Illuminate\Support\Facades\Auth;
 
 class LessonController extends Controller
 {
+    /**
+     * Menampilkan halaman materi belajar
+     */
     public function show(Lesson $lesson)
     {
+        dd('Lesson Controller Berhasil Dipanggil!', $lesson);
+        // 1. Load relasi agar navigasi breadcrumb berjalan
         $lesson->load(['module.course']);
         
+        // 2. Load badges untuk layout (INI SOLUSI AGAR TIDAK BLANK) 🛠️
         $user = Auth::user();
         $badges = $user ? $user->badges : collect([]);
 
+        // Kirim data ke View
         return view('lessons.show', compact('lesson', 'badges'));
     }
 
+    /**
+     * Menandai materi selesai & memberi XP
+     */
     public function complete(Request $request, Lesson $lesson)
     {
         $user = Auth::user();
-
-        // Cek sudah selesai belum
-        $exists = UserProgress::where('user_id', $user->id)
+        
+        // Cek apakah user sudah pernah menyelesaikan materi ini?
+        $hasCompleted = UserProgress::where('user_id', $user->id)
             ->where('lesson_id', $lesson->id)
             ->where('is_completed', true)
             ->exists();
 
-        if ($exists) {
-            return response()->json(['message' => 'Sudah selesai sebelumnya', 'xp_reward' => 0]);
+        if ($hasCompleted) {
+            return response()->json([
+                'success' => true, // Tetap true agar tombol jadi 'Selesai'
+                'message' => 'Kamu sudah menyelesaikan materi ini sebelumnya.',
+                'xp_reward' => 0
+            ]);
         }
 
-        // Simpan Progress
+        // Simpan Progress ke Database
         UserProgress::create([
             'user_id' => $user->id,
             'lesson_id' => $lesson->id,
@@ -43,16 +57,21 @@ class LessonController extends Controller
             'xp_awarded' => true
         ]);
 
-        // Tambah XP
+        // Tambahkan XP ke User
         $xp = $lesson->xp_reward ?? 10;
+        
         if (method_exists($user, 'addXP')) {
             $user->addXP($xp);
         } else {
-            // Fallback manual jika method addXP belum ada
             $user->experience = ($user->experience ?? 0) + $xp;
             $user->save();
         }
 
-        return response()->json(['message' => 'Selesai!', 'xp_reward' => $xp]);
+        // Kirim respon sukses ke Javascript
+        return response()->json([
+            'success' => true, // <--- INI KUNCI AGAR TOMBOL BERUBAH 🔑
+            'message' => 'Hore! Materi Selesai. +' . $xp . ' XP',
+            'xp_reward' => $xp
+        ]);
     }
 }

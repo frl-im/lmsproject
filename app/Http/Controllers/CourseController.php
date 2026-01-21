@@ -6,7 +6,7 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class CourseController extends Controller
+class CourseController extends Controller 
 {
     /**
      * Menampilkan daftar kursus di Dashboard
@@ -26,15 +26,17 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        try {
-            $course->load(['modules.lessons']);
-            
-            $user = Auth::user();
-            $badges = $user ? $user->badges : collect([]);
+        // 1. Load materi dengan relasi
+        $course->load(['modules.lessons']);
+        
+        // 2. Ambil data user & badges
+        $user = Auth::user();
+        $badges = $user ? $user->badges : collect([]);
 
-            return view('courses.show', compact('course', 'badges'));
-        } catch (\Exception $e) {
-            dd('Error di show:', $e->getMessage(), $e->getFile(), $e->getLine());
-        }
+        // 3. Ambil daftar semua course untuk sidebar/menu
+        $courses = Course::all(); 
+
+        // Kirim semua data ke view
+        return view('courses.show', compact('course', 'badges', 'courses', 'user'));
     }
 }
