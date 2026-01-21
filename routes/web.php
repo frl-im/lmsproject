@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\CourseController as AdminCourseController;
 use App\Http\Controllers\Admin\ModuleController as AdminModuleController;
 use App\Http\Controllers\Admin\LessonController as AdminLessonController;
 use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\UserProgressController;
 
 // AUTH
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -82,6 +83,12 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     // Leaderboard
     Route::get('/leaderboard', [LeaderboardController::class, 'index'])
         ->name('leaderboard.index');
+    
+    Route::get('/leaderboard/monthly', [LeaderboardController::class, 'monthly'])
+        ->name('leaderboard.monthly');
+    
+    Route::get('/leaderboard/course/{course}', [LeaderboardController::class, 'byCourse'])
+        ->name('leaderboard.course');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'show'])
@@ -163,6 +170,32 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
         // Hapus soal
         Route::delete('quiz/{question}', [QuestionController::class, 'destroy'])
             ->name('quiz.destroy');
+
+        // 📊 USER PROGRESS & CERTIFICATES
+
+        // Pantau progress semua user
+        Route::get('/users/progress', [UserProgressController::class, 'index'])
+            ->name('users.progress.index');
+
+        // Detail progress user tertentu
+        Route::get('/users/{user}/progress', [UserProgressController::class, 'show'])
+            ->name('users.progress.show');
+
+        // Lihat ranking (global, monthly, per course)
+        Route::get('/rankings', [UserProgressController::class, 'rankings'])
+            ->name('rankings');
+
+        // Berikan sertifikat manual
+        Route::post('/certificates/award', [UserProgressController::class, 'awardCertificates'])
+            ->name('certificates.award');
+
+        // Auto-award top 3
+        Route::post('/certificates/auto-award', [UserProgressController::class, 'autoAwardTopThree'])
+            ->name('certificates.auto-award');
+
+        // Cabut sertifikat
+        Route::delete('/certificates/{certificate}', [UserProgressController::class, 'revokeCertificate'])
+            ->name('certificates.revoke');
     });
 
     // API Routes for Daily Missions

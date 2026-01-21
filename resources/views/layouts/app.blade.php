@@ -22,13 +22,47 @@
         <header class="bg-white dark:bg-gray-800 shadow">
             <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
                 <!-- KIRI -->
-                <div class="text-lg font-bold text-gray-800 dark:text-white">
-                    {{ config('app.name', 'LMS') }}
+                <div class="flex items-center gap-8">
+                    <a href="{{ route('dashboard') }}" class="text-lg font-bold text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        {{ config('app.name', 'LMS') }}
+                    </a>
+                    
+                    @auth
+                    <nav class="flex items-center gap-6 text-sm font-medium">
+                        <a href="{{ route('dashboard') }}" class="text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                            📚 Pelajaran
+                        </a>
+                        <a href="{{ route('leaderboard.index') }}" class="text-gray-700 dark:text-gray-200 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors flex items-center gap-1">
+                            🏆 Leaderboard
+                        </a>
+                    </nav>
+                    @endauth
                 </div>
 
                 <!-- KANAN -->
                 @auth
-                <div class="relative">
+                <div class="flex items-center gap-4">
+                    <!-- Notification Bell -->
+                    <div class="relative">
+                        <button id="notificationBell" class="relative p-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            <span id="notificationDot" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                        </button>
+                        
+                        <!-- Notification Dropdown -->
+                        <div id="notificationDropdown" class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-700 rounded-xl shadow-lg z-50 hidden max-h-96 overflow-y-auto">
+                            <div class="p-4 border-b border-gray-200 dark:border-gray-600">
+                                <h3 class="font-bold text-gray-800 dark:text-white">Notifikasi</h3>
+                            </div>
+                            <div id="notificationList" class="p-4">
+                                <p class="text-gray-500 dark:text-gray-400 text-sm text-center">Tidak ada notifikasi</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="relative">
                     <button id="userMenuButton"
                     class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none">
 
@@ -84,6 +118,7 @@
                         </form>
                     </div>
                 </div>
+                </div>
                 @endauth
             </div>
         </header>
@@ -135,6 +170,23 @@
 
                 arrow.classList.remove('rotate-180');
             });
+            
+            // Notification Bell
+            const notificationBell = document.getElementById('notificationBell');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            
+            if (notificationBell && notificationDropdown) {
+                notificationBell.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    notificationDropdown.classList.toggle('hidden');
+                });
+                
+                document.addEventListener('click', function (e) {
+                    if (!notificationBell.contains(e.target) && !notificationDropdown.contains(e.target)) {
+                        notificationDropdown.classList.add('hidden');
+                    }
+                });
+            }
         });
         </script>
 

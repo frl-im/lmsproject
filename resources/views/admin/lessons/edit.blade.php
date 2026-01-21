@@ -65,13 +65,23 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-end mt-6">
-                             <a href="{{ route('admin.lessons.index') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                                Batal
-                            </a>
-                            <x-primary-button class="ml-4">
-                                {{ __('Perbarui') }}
-                            </x-primary-button>
+                        <div class="flex items-center justify-between mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                            <div>
+                                @if($lesson->type === 'kuis')
+                                    <a href="{{ route('admin.quiz.index', $lesson) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition">
+                                        📝 Kelola Soal Kuis
+                                    </a>
+                                @endif
+                            </div>
+                            
+                            <div class="flex items-center gap-4">
+                                <a href="{{ route('admin.lessons.index') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                                    Batal
+                                </a>
+                                <x-primary-button>
+                                    {{ __('Perbarui') }}
+                                </x-primary-button>
+                            </div>
                         </div>
                     </form>
                 </div>

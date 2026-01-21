@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('quiz_results', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
-            $table->foreignId('question_id');
-            $table->string('answer');
-            $table->boolean('is_correct');
-            $table->integer('point')->default(0);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('lesson_id')->constrained()->onDelete('cascade');
+            $table->integer('total_questions')->default(0);
+            $table->integer('correct_answers')->default(0);
+            $table->integer('score')->default(0); // nilai 0-100
+            $table->integer('xp_earned')->default(0);
+            $table->boolean('passed')->default(false); // lulus/tidak
             $table->timestamps();
         });
-
     }
 
     /**

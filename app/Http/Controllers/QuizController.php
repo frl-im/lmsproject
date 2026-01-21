@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Lesson;
+use App\Models\Course;
 use App\Models\UserProgress;
+use App\Models\QuizResult;
 use App\Http\Controllers\CompletionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,12 +17,12 @@ class QuizController extends Controller
     /**
      * Show quiz for student
      */
-    public function show(Lesson $lesson)
+    public function show(Course $course, Lesson $lesson)
     {
         try {
             // Pastikan lesson tipe kuis dan user sudah authenticated
             if ($lesson->type !== 'kuis') {
-                return redirect()->route('lessons.show', $lesson)
+                return redirect()->route('lessons.show', ['course' => $course->id, 'lesson' => $lesson->id])
                     ->with('error', 'Lesson ini bukan tipe kuis');
             }
 
@@ -36,19 +38,19 @@ class QuizController extends Controller
 
             // Jika tidak ada soal, redirect dengan error
             if ($questions->isEmpty()) {
-                return redirect()->route('lessons.show', $lesson)
+                return redirect()->route('lessons.show', ['course' => $course->id, 'lesson' => $lesson->id])
                     ->with('error', 'Kuis belum memiliki soal');
             }
 
             return view('quiz.show', compact('lesson', 'questions', 'previousAttempt', 'user'));
         } catch (\Exception $e) {
-            return redirect()->route('lessons.show', $lesson ?? null)
+            return redirect()->route('lessons.show', ['course' => $course->id, 'lesson' => $lesson->id])
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
     /**
-     * Submit quiz answers dengan anti-farming logic
+     * Submit quiz answers dengan anti-farming logic dan QuizResult tracking
      */
     public function submit(Request $request, Lesson $lesson)
     {
@@ -69,12 +71,12 @@ class QuizController extends Controller
 
             DB::beginTransaction();
 
-            // Cek apakah user sudah pernah submit kuis ini (anti-farming)
-            $existingProgress = UserProgress::where('user_id', $user->id)
+            // Cek apakah user sudah pernah submit kuis ini (dari QuizResult)
+            $previousResult = QuizResult::where('user_id', $user->id)
                 ->where('lesson_id', $lesson->id)
                 ->first();
 
-            $isFirstAttempt = !$existingProgress;
+            $isFirstAttempt = !$previousResult;
 
             $answers = $request->input('answers');
             $questions = $lesson->questions()->get();
@@ -95,24 +97,47 @@ class QuizController extends Controller
 
             // Hitung persentase
             $percentage = ($totalQuestions > 0) ? ($correctCount / $totalQuestions * 100) : 0;
+            $isPassed = $percentage >= 70;
 
             // ANTI-FARMING LOGIC: 
-            // Jika first attempt: simpan score dan award XP
-            // Jika retry: update score tapi TIDAK award XP lagi
             if ($isFirstAttempt) {
-                // FIRST TIME - Award XP
+                // FIRST TIME - Award XP and create QuizResult
                 $xpReward = $lesson->xp_reward ?? 10;
                 
-                $progress = UserProgress::create([
+                // Simpan ke quiz_results
+                QuizResult::create([
                     'user_id' => $user->id,
                     'lesson_id' => $lesson->id,
-                    'course_id' => $lesson->module->course_id,
-                    'quiz_score' => $percentage,
-                    'quiz_attempts' => 1,
-                    'is_completed' => true,
-                    'xp_awarded' => true,
-                    'completed_at' => now(),
+                    'total_questions' => $totalQuestions,
+                    'correct_answers' => $correctCount,
+                    'score' => round($percentage),
+                    'xp_earned' => $xpReward,
+                    'passed' => $isPassed,
                 ]);
+
+                // Simpan ke user_progress juga untuk tracking completion
+                $existingProgress = UserProgress::where('user_id', $user->id)
+                    ->where('lesson_id', $lesson->id)
+                    ->first();
+
+                if ($existingProgress) {
+                    $existingProgress->update([
+                        'quiz_score' => $percentage,
+                        'is_completed' => true,
+                        'xp_awarded' => true,
+                        'completed_at' => now(),
+                    ]);
+                } else {
+                    UserProgress::create([
+                        'user_id' => $user->id,
+                        'lesson_id' => $lesson->id,
+                        'course_id' => $lesson->module->course_id,
+                        'quiz_score' => $percentage,
+                        'is_completed' => true,
+                        'xp_awarded' => true,
+                        'completed_at' => now(),
+                    ]);
+                }
 
                 // Award XP to user
                 $user->addXP($xpReward);
@@ -122,49 +147,51 @@ class QuizController extends Controller
 
                 DB::commit();
 
-                return redirect()->route('lessons.show', $lesson)->with([
+                return redirect()->route('lessons.show', [$lesson->module->course, $lesson])->with([
                     'quiz_result' => true,
-                    'passed' => $percentage >= 70,
-                    'is_first_attempt' => true,
-                    'percentage' => $percentage,
+                    'passed' => $isPassed,
+                    'percentage' => round($percentage),
                     'correct_count' => $correctCount,
                     'total_questions' => $totalQuestions,
                     'score' => $totalScore,
                     'xp_reward' => $xpReward,
-                    'message' => 'Kerja Bagus! Kamu mendapatkan ' . $xpReward . ' XP!',
                 ]);
             } else {
-                // RETRY - Update score only, NO XP
-                // Update hanya jika score lebih tinggi dari sebelumnya
-                if ($percentage > $existingProgress->quiz_score) {
-                    $existingProgress->update([
-                        'quiz_score' => $percentage,
-                        'quiz_attempts' => DB::raw('quiz_attempts + 1'),
+                // RETRY - Update score only jika lebih baik, NO XP reward
+                $newScore = round($percentage);
+                
+                if ($newScore > $previousResult->score) {
+                    $previousResult->update([
+                        'score' => $newScore,
+                        'correct_answers' => $correctCount,
+                        'passed' => $isPassed,
+                        'updated_at' => now(),
                     ]);
+                    $message = 'Skor meningkat! Score baru: ' . $newScore . '%';
                 } else {
-                    $existingProgress->increment('quiz_attempts');
+                    $message = 'Latihan selesai (Score tidak meningkat)';
                 }
 
                 DB::commit();
 
-                return redirect()->route('lessons.show', $lesson)->with([
+                return redirect()->route('lessons.show', [$lesson->module->course, $lesson])->with([
                     'quiz_result' => true,
-                    'passed' => $percentage >= 70,
-                    'is_first_attempt' => false,
-                    'percentage' => $percentage,
-                    'previous_score' => $existingProgress->quiz_score,
+                    'passed' => $isPassed,
+                    'percentage' => $newScore,
+                    'previous_score' => $previousResult->score,
                     'correct_count' => $correctCount,
                     'total_questions' => $totalQuestions,
                     'score' => $totalScore,
                     'xp_reward' => 0,
-                    'message' => 'Latihan selesai (Tanpa Poin Tambahan)',
+                    'is_retry' => true,
+                    'message' => $message,
                 ]);
             }
 
         } catch (\Exception $e) {
             DB::rollBack();
             
-            return redirect()->route('lessons.show', $lesson)
+            return redirect()->route('lessons.show', [$lesson->module->course, $lesson])
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }

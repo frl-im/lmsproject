@@ -61,9 +61,14 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                             {{ $lesson->xp_reward }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4 flex justify-end">
                                             <a href="{{ route('admin.lessons.edit', $lesson) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-600">Edit</a>
-                                            <form action="{{ route('admin.lessons.destroy', $lesson) }}" method="POST" class="inline-block ml-4" onsubmit="return confirm('Apakah Anda yakin ingin menghapus ini?');">
+                                            
+                                            @if($lesson->type === 'kuis')
+                                                <a href="{{ route('admin.quiz.index', $lesson) }}" class="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-600 font-semibold">📝 Soal</a>
+                                            @endif
+                                            
+                                            <form action="{{ route('admin.lessons.destroy', $lesson) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus ini?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-600">Hapus</button>

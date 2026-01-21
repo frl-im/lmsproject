@@ -111,6 +111,33 @@
             </div>
         </div>
 
+        {{-- LEADERBOARD SHORTCUT --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <a href="{{ route('leaderboard.index') }}" class="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold opacity-90">📊 Global Leaderboard</p>
+                        <p class="text-2xl font-black mt-1">Lihat Ranking Global</p>
+                    </div>
+                    <svg class="w-12 h-12 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8 8 0 1010.586 10.586z"></path>
+                    </svg>
+                </div>
+            </a>
+            
+            <a href="{{ route('leaderboard.monthly') }}" class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold opacity-90">📅 Ranking Bulanan</p>
+                        <p class="text-2xl font-black mt-1">Lihat Score Bulan Ini</p>
+                    </div>
+                    <svg class="w-12 h-12 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v2h16V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+            </a>
+        </div>
+
         {{-- COURSES --}}
         <h2 class="text-2xl font-black mb-6">🚀 Petualanganku</h2>
 

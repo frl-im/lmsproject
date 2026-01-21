@@ -25,20 +25,32 @@
                 @if ($lesson->type === 'materi')
                     @php
                         $isCompleted = auth()->user()->lessons()->where('lesson_id', $lesson->id)->exists();
+                        $quizForThisLesson = $lesson->questions()->exists();
                     @endphp
 
-                    <button id="complete-lesson-btn"
-                            class="w-full font-bold py-4 px-8 rounded-lg text-lg transition-all shadow-lg flex items-center justify-center space-x-2 {{ $isCompleted ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:scale-105' }}"
-                            data-lesson-id="{{ $lesson->id }}"
-                            data-xp="{{ $lesson->xp_reward ?? 10 }}"
-                            {{ $isCompleted ? 'disabled' : '' }}>
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span>{{ $isCompleted ? 'Sudah Selesai' : 'Tandai Selesai & Klaim XP' }}</span>
-                    </button>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button id="complete-lesson-btn"
+                                class="flex-1 font-bold py-4 px-8 rounded-lg text-lg transition-all shadow-lg flex items-center justify-center space-x-2 {{ $isCompleted ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:scale-105' }}"
+                                data-lesson-id="{{ $lesson->id }}"
+                                data-xp="{{ $lesson->xp_reward ?? 10 }}"
+                                {{ $isCompleted ? 'disabled' : '' }}>
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>{{ $isCompleted ? '✓ Sudah Selesai' : 'Tandai Selesai & Klaim XP' }}</span>
+                        </button>
+                        
+                        @if($quizForThisLesson)
+                            <a href="{{ route('quiz.show', ['course' => $lesson->module->course_id, 'lesson' => $lesson->id]) }}" class="flex-1 inline-block bg-purple-600 text-white font-bold py-4 px-8 rounded-lg text-center hover:bg-purple-700 transition-all shadow-lg flex items-center justify-center space-x-2">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>🎯 Mulai Kuis</span>
+                            </a>
+                        @endif
+                    </div>
                 @elseif ($lesson->type === 'kuis')
-                    <a href="{{ route('quiz.show', $lesson) }}" class="w-full inline-block bg-purple-600 text-white font-bold py-4 px-8 rounded-lg text-center hover:bg-purple-700">Mulai Kuis</a>
+                    <a href="{{ route('quiz.show', ['course' => $lesson->module->course_id, 'lesson' => $lesson->id]) }}" class="w-full inline-block bg-purple-600 text-white font-bold py-4 px-8 rounded-lg text-center hover:bg-purple-700 transition-all shadow-lg">🎯 Mulai Kuis</a>
                 @endif
             </div>
 
@@ -79,11 +91,13 @@
     </div>
 
     @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.getElementById('complete-lesson-btn')?.addEventListener('click', function() {
             const btn = this;
             const lessonId = btn.dataset.lessonId;
             const xp = btn.dataset.xp;
+            const lessonTitle = document.querySelector('h1')?.textContent || 'Materi';
 
             btn.disabled = true;
             btn.classList.add('opacity-50');
@@ -98,24 +112,71 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    showNotification(`✨ Selamat! +${xp} XP`, 'success');
-                    btn.innerHTML = '<span>✓ Selesai</span>';
-                    btn.className = "w-full bg-gray-400 text-white font-bold py-4 px-8 rounded-lg cursor-not-allowed flex items-center justify-center";
+                    // Sweet Alert Notification
+                    Swal.fire({
+                        title: '🎉 Selamat!',
+                        html: `
+                            <p class="text-lg font-semibold mb-3">Materi Selesai!</p>
+                            <div class="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg p-4 mb-4">
+                                <p class="text-3xl font-bold text-green-600">+${xp} XP</p>
+                                <p class="text-gray-600 dark:text-gray-300 mt-2">"${lessonTitle}"</p>
+                            </div>
+                            <p class="text-gray-700 dark:text-gray-300">Lanjutkan dengan mengerjakan kuis untuk XP tambahan! 🚀</p>
+                        `,
+                        icon: 'success',
+                        confirmButtonText: 'Lanjutkan',
+                        confirmButtonColor: '#10b981',
+                        allowOutsideClick: false
+                    });
+
+                    // Update button
+                    btn.innerHTML = '<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>✓ Sudah Selesai</span>';
+                    btn.className = "flex-1 bg-gray-400 text-white font-bold py-4 px-8 rounded-lg cursor-not-allowed flex items-center justify-center space-x-2";
+                    
+                    // Add to notification dropdown
+                    addNotificationToDropdown(`✅ "${lessonTitle}" selesai! +${xp} XP`);
+                    
+                    // Update notification dot
+                    const notificationDot = document.getElementById('notificationDot');
+                    if (notificationDot) {
+                        notificationDot.classList.remove('hidden');
+                    }
                 }
             })
-            .catch(() => {
-                showNotification('Gagal menyimpan progress', 'error');
+            .catch((err) => {
+                Swal.fire({
+                    title: '❌ Error',
+                    text: 'Gagal menyimpan progress materi. Silakan coba lagi.',
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444'
+                });
                 btn.disabled = false;
                 btn.classList.remove('opacity-50');
             });
         });
-
-        function showNotification(msg, type) {
-            const el = document.createElement('div');
-            el.className = `fixed bottom-4 right-4 px-6 py-3 rounded shadow-lg text-white ${type==='success'?'bg-green-500':'bg-red-500'}`;
-            el.innerText = msg;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 3000);
+        
+        function addNotificationToDropdown(message) {
+            const notificationList = document.getElementById('notificationList');
+            if (!notificationList) return;
+            
+            const emptyMessage = notificationList.querySelector('p');
+            if (emptyMessage) {
+                emptyMessage.remove();
+            }
+            
+            const notifItem = document.createElement('div');
+            notifItem.className = 'bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 p-3 rounded mb-2';
+            notifItem.innerHTML = `
+                <div class="flex items-start gap-2">
+                    <span class="text-green-500 flex-shrink-0">✓</span>
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">${message}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Baru saja</p>
+                    </div>
+                </div>
+            `;
+            
+            notificationList.insertBefore(notifItem, notificationList.firstChild);
         }
     </script>
     @endpush

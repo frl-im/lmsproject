@@ -74,6 +74,11 @@ class User extends Authenticatable
         return $this->hasMany(DailyMission::class);
     }
 
+    public function quizResults(): HasMany
+    {
+        return $this->hasMany(QuizResult::class);
+    }
+
     /**
      * The badges that belong to the user.
      */
@@ -133,11 +138,19 @@ class User extends Authenticatable
         $this->increment('points', $amount);
     }
    public function lessons()
-{
-    // Menggunakan tabel pivot 'user_progress'
-    // Sesuaikan 'lesson_id' dan 'user_id' jika nama kolom berbeda
-    return $this->belongsToMany(Lesson::class, 'user_progress', 'user_id', 'lesson_id')
-                ->withPivot('is_completed', 'xp_awarded', 'completed_at')
-                ->withTimestamps();
-}
+    {
+        // Menggunakan tabel pivot 'user_progress'
+        // Sesuaikan 'lesson_id' dan 'user_id' jika nama kolom berbeda
+        return $this->belongsToMany(Lesson::class, 'user_progress', 'user_id', 'lesson_id')
+                    ->withPivot('is_completed', 'xp_awarded', 'completed_at')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get the certificates awarded to this user
+     */
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
 }
