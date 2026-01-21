@@ -37,4 +37,24 @@ class CourseController extends Controller
             dd('Error di show:', $e->getMessage(), $e->getFile(), $e->getLine());
         }
     }
+
+
+        /**
+     * Menampilkan kursus khusus Premium
+     */
+    public function premium()
+    {
+        $user = Auth::user();
+
+        // Double safety (walau sudah pakai middleware premium)
+        if (!$user || !$user->isPremium()) {
+            abort(403, 'Fitur ini hanya untuk pengguna Premium');
+        }
+
+        // Ambil course (boleh sama / boleh dibedakan flag premium)
+        $courses = Course::with(['modules.lessons'])->get();
+
+        return view('courses.premium', compact('courses'));
+    }
+
 }

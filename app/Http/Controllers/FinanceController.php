@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Payment;
+use Illuminate\Support\Str;
+
 
 class FinanceController extends Controller
 {
@@ -31,12 +34,29 @@ class FinanceController extends Controller
         try {
             $user = Auth::user();
 
+            // Cegah beli ulang
+            if ($user->isPremium()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Akun kamu sudah Premium.',
+                ], 400);
+            }
+
             DB::beginTransaction();
 
-            // Simulasi pembayaran - langsung upgrade ke premium
+            // Simpan transaksi pembayaran (SIMULASI)
+            $payment = Payment::create([
+                'user_id' => $user->id,
+                'reference_code' => 'INV-' . strtoupper(Str::random(8)),
+                'method' => 'simulasi',
+                'amount' => 25000,
+                'status' => 'paid', // karena simulasi
+            ]);
+
+            // Upgrade premium
             $user->upgradeToPremium();
-            
-            // Berikan bonus XP untuk upgrade
+
+            // Bonus XP
             $user->addXP(100);
 
             DB::commit();
@@ -44,12 +64,14 @@ class FinanceController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Pembayaran Berhasil (Simulasi)! Selamat datang di Premium.',
+                'reference_code' => $payment->reference_code,
                 'is_premium' => $user->is_premium,
                 'experience' => $user->experience,
             ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),

@@ -14,6 +14,7 @@ use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\ConsultController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Api\DailyMissionController;
+use App\Http\Controllers\PaymentController;
 
 
 // ADMIN CONTROLLERS
@@ -104,6 +105,13 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
         Route::get('/status', [FinanceController::class, 'getSubscriptionStatus'])->name('status');
     });
 
+    // 🔒 PREMIUM 
+    Route::middleware(['premium'])->group(function () {
+        Route::get('/courses/premium', [CourseController::class, 'premium'])->name('courses.premium');
+        Route::get('/quiz/premium', [QuizController::class, 'premium'])->name('quiz.premium');
+        // Route::get('/certificate', [CertificateController::class, 'index'])->name('certificate.index');
+    });
+
     // Consult / Chat (BAGIAN 3)
     Route::prefix('consult')->name('consult.')->group(function () {
         Route::get('/', [ConsultController::class, 'index'])->name('index');
@@ -113,6 +121,31 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
         Route::delete('/messages/{messageId}', [ConsultController::class, 'deleteMessage'])->name('delete');
     });
 
+    // 💳 PAYMENT / SUBSCRIPTION ROUTES
+    Route::prefix('payment')->name('payment.')->group(function () {
+        // Public route - upgrade page (will redirect to login if not auth)
+        Route::get('/upgrade', [PaymentController::class, 'showUpgrade'])->name('upgrade');
+        
+        // Protected routes
+        Route::middleware(['auth'])->group(function () {
+            // Midtrans
+            Route::get('/midtrans/checkout', [PaymentController::class, 'midtransCheckout'])->name('midtrans.checkout');
+            
+            // Stripe
+            Route::get('/stripe/checkout', [PaymentController::class, 'stripeCheckout'])->name('stripe.checkout');
+            
+            // PayPal
+            Route::get('/paypal/checkout', [PaymentController::class, 'paypalCheckout'])->name('paypal.checkout');
+            
+            // Manual Transfer
+            Route::get('/manual/checkout', [PaymentController::class, 'manualCheckout'])->name('manual.checkout');
+            
+            // Simulasi Success
+            Route::get('/simulate-success', [PaymentController::class, 'simulateSuccess'])->name('simulate-success');
+            
+            // Check Status
+            Route::get('/check-status/{referenceCode}', [PaymentController::class, 'checkStatus'])->name('check-status');
+        });
     });
 
 // ROUTE ADMIN
@@ -174,6 +207,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
         Route::get('/daily-missions/statistics', [DailyMissionController::class, 'getStatistics'])
             ->name('api.daily-missions.statistics');
     });
+
+    }); // Close authenticated user routes
 
 // ROUTE AUTH BAWAAN
 require __DIR__.'/auth.php';

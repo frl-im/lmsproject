@@ -168,5 +168,27 @@ class QuizController extends Controller
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+        /**
+     * Quiz khusus Premium
+     */
+    public function premium()
+    {
+        $user = Auth::user();
+
+        // Double safety
+        if (!$user || !$user->isPremium()) {
+            abort(403, 'Fitur ini hanya untuk pengguna Premium');
+        }
+
+        // Contoh: ambil semua lesson tipe kuis (bisa kamu sesuaikan)
+        $lessons = Lesson::where('type', 'kuis')
+            ->with('module.course')
+            ->latest()
+            ->get();
+
+        return view('quiz.premium', compact('lessons'));
+    }
+
 }
 

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Traits\TracksDailyMissions;
+use App\Models\Payment;
 
 class User extends Authenticatable
 {
@@ -29,6 +30,8 @@ class User extends Authenticatable
         'points',
         'is_admin',
         'is_premium',
+        'premium_expires_at',
+        'subscription_status',
     ];
 
     /**
@@ -51,6 +54,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'is_premium' => 'boolean',
+            'premium_expires_at' => 'datetime',
         ];
     }
 
@@ -128,5 +134,13 @@ class User extends Authenticatable
     public function addPoints($amount = 5): void
     {
         $this->increment('points', $amount);
+    }
+
+    /**
+     * Add payment to user.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 }

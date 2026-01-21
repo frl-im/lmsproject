@@ -205,18 +205,18 @@
                     <li class="flex items-center"><span class="text-green-300 mr-3">✓</span> Sertifikat Digital</li>
                     <li class="flex items-center"><span class="text-green-300 mr-3">✓</span> Support Priority</li>
                 </ul>
-                @if(Auth::check())
-                    <form action="{{ route('finance.purchase') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full px-6 py-2 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition">
-                            Upgrade Sekarang
-                        </button>
-                    </form>
+                @if(Auth::check() && Auth::user()->is_premium)
+                    <button class="block w-full px-6 py-2 bg-white text-blue-600 font-bold rounded-lg opacity-75 cursor-default" disabled>
+                        Sudah Premium ✓
+                    </button>
                 @else
-                    <a href="{{ route('register') }}" class="block w-full px-6 py-2 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 text-center transition">
-                        Daftar & Upgrade
+                    <a href="{{ route('payment.upgrade') }}"
+                        class="block w-full px-6 py-2 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 text-center transition">
+                            Upgrade Sekarang
                     </a>
                 @endif
+
+
             </div>
         </div>
     </div>

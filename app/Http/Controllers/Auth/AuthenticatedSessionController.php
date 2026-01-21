@@ -41,6 +41,11 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        // 🔥 PRIORITAS: login dari tombol "Login & Upgrade"
+        if ($request->get('redirect') === 'upgrade') {
+            return redirect()->route('finance.index');
+        }
+
         // Routing berbasis role
         if ($request->user()->is_admin) {
             return redirect()->intended(route('admin.dashboard'));
@@ -48,6 +53,7 @@ class AuthenticatedSessionController extends Controller
 
         return redirect()->intended(route('dashboard'));
     }
+
 
     public function destroy(Request $request): RedirectResponse
     {
