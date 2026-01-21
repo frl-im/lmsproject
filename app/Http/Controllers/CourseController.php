@@ -4,24 +4,37 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
     /**
-     * Display a listing of the resource for the student dashboard.
+     * Menampilkan daftar kursus di Dashboard
      */
     public function index()
     {
-        $courses = Course::withCount('modules.lessons')->get();
-        return view('dashboard', compact('courses'));
+        $user = Auth::user();
+        $courses = Course::withCount('modules')->get();
+        // Pastikan variabel badges selalu terkirim
+        $badges = $user ? $user->badges : collect([]);
+
+        return view('dashboard', compact('courses', 'user', 'badges'));
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan detail kursus
      */
     public function show(Course $course)
     {
-        $course->load('modules.lessons'); // Eager load modules and their lessons
-        return view('courses.show', compact('course'));
+        try {
+            $course->load(['modules.lessons']);
+            
+            $user = Auth::user();
+            $badges = $user ? $user->badges : collect([]);
+
+            return view('courses.show', compact('course', 'badges'));
+        } catch (\Exception $e) {
+            dd('Error di show:', $e->getMessage(), $e->getFile(), $e->getLine());
+        }
     }
 }

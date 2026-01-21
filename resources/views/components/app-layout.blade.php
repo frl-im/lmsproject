@@ -13,7 +13,7 @@
 <div class="min-h-screen flex">
 
     {{-- SIDEBAR --}}
-    <aside class="w-64 bg-gradient-to-b from-blue-600 to-purple-700 text-white hidden md:flex flex-col">
+    <aside class="w-64 bg-gradient-to-b from-blue-600 to-purple-700 text-white flex flex-col">
         <div class="px-6 py-6 text-2xl font-black">
             🎮 LMS Quest
         </div>
@@ -44,7 +44,9 @@
         {{-- TOP BAR --}}
         <header class="bg-white dark:bg-slate-800 shadow px-6 py-4 flex justify-between items-center">
             <div>
-                {{ $header ?? '' }}
+                @isset($header)
+                    {{ $header }}
+                @endisset
             </div>
 
             <div class="flex items-center gap-6">
