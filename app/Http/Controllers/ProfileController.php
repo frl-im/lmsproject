@@ -26,19 +26,12 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        // TAMBAHAN: Load badges agar layout tidak crash
-        $user = $request->user();
-        $badges = [];
-        
-        try {
-            if (method_exists($user, 'badges')) {
-                $badges = $user->badges;
-            }
-        } catch (\Exception $e) {}
+        $user = $request->user()->load('badges');
+        $badges = $user->badges;
 
         return view('profile.edit', [
             'user' => $user,
-            'badges' => $badges, // Kirim variabel badges
+            'badges' => $badges,
         ]);
     }
 

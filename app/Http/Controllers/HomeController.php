@@ -14,25 +14,15 @@ class HomeController extends Controller
     public function index()
     {
         try {
-            // Jika sudah login
-            if (Auth::check()) {
-                $user = Auth::user();
-                
-                // Redirect ke admin dashboard jika admin
-                if ($user->isAdmin()) {
-                    return redirect()->route('admin.dashboard');
-                }
-                
-                // Redirect ke user dashboard
-                return redirect()->route('dashboard');
-            }
-
-            // Guest - show landing page
-            $courses = Course::take(6)->get(); // Tampilkan 6 course di landing
+            // Tampilkan landing page untuk semua (guest & authenticated)
+            $courses = Course::where('is_published', true)
+                ->withCount('modules')
+                ->take(6)
+                ->get();
             
             return view('home.landing', compact('courses'));
         } catch (\Exception $e) {
-            return view('home.landing', ['error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+            return view('home.landing', ['courses' => collect(), 'error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
 
@@ -75,24 +65,30 @@ class HomeController extends Controller
     public function dashboard()
     {
         try {
-            $user = Auth::user();
+            $user = Auth::user()->load('badges', 'userProgresses');
             
             // Redirect admin ke admin dashboard
             if ($user->isAdmin()) {
                 return redirect()->route('admin.dashboard');
             }
 
-            // Get enrolled courses
-            $courses = $user->courses()->withCount('modules')->get();
+            // Get enrolled courses with module count
+            $courses = $user->courses()
+                ->with('modules.lessons')
+                ->withCount('modules')
+                ->get();
             
-            // Get recent activity
+            // Get recent activity with defensive logic
             $recentProgress = $user->userProgresses()
                 ->with('lesson.module.course')
                 ->orderBy('completed_at', 'DESC')
                 ->take(5)
                 ->get();
 
-            return view('dashboard', compact('courses', 'recentProgress', 'user'));
+            // Get badges for gamification display
+            $badges = $user->badges;
+
+            return view('dashboard', compact('courses', 'recentProgress', 'user', 'badges'));
         } catch (\Exception $e) {
             return redirect()->route('home')
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

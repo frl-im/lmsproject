@@ -29,5 +29,8 @@ class DatabaseSeeder extends Seeder
                 'is_admin' => 0,
             ]
         );
+
+        // Seed courses and related data
+        $this->call(CourseSeeder::class);
     }
 }
