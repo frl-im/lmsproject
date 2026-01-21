@@ -43,7 +43,7 @@
         </div>
 
         <footer class="mt-16 text-center text-sm text-gray-500 dark:text-gray-400">
-            LMS Gamifikasi v1.0 (PHP v{{ PHP_VERSION }})
+            LMS Gamifikasi v1.0
         </footer>
     </div>
 </body>
