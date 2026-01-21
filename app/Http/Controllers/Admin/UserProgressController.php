@@ -60,11 +60,7 @@ class UserProgressController extends Controller
         $progress = $this->calculateUserProgress($user);
         
         // Get courses with completion status
-        $courses = Course::with([
-            'lessons' => function ($q) {
-                $q->with('userProgress');
-            }
-        ])->get();
+        $courses = Course::with('lessons')->get();
 
         // Map course progress
         $courseProgress = $courses->map(function ($course) use ($user) {

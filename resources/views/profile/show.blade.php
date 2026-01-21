@@ -7,13 +7,13 @@
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 class="text-4xl font-black text-blue-600 dark:text-blue-400">
                     👤 Profil Saya
                 </h1>
                 <p class="text-gray-600 dark:text-gray-400 mt-1">Kelola informasi akun Anda</p>
             </div>
             <a href="{{ route('profile.edit') }}" 
-               class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl hover:shadow-lg transform hover:scale-105 transition">
+               class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 hover:shadow-lg transform hover:scale-105 transition">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                 </svg>
@@ -23,14 +23,14 @@
 
         <!-- Profile Hero Card -->
         <div class="mb-8">
-            <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl shadow-2xl overflow-hidden">
                 <div class="relative px-8 py-12 sm:py-16">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-8">
                         <!-- Avatar -->
                         <div class="flex-shrink-0">
                             <div class="relative">
                                 <div class="w-32 h-32 rounded-3xl bg-gradient-to-br from-white to-gray-100 flex items-center justify-center shadow-2xl border-4 border-white overflow-hidden">
-                                    <span class="text-6xl font-black text-transparent bg-gradient-to-br from-indigo-600 to-pink-600 bg-clip-text">
+                                    <span class="text-6xl font-black text-blue-600">
                                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                     </span>
                                 </div>
@@ -97,7 +97,7 @@
 
                 <!-- Personal Information -->
                 <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden">
-                    <div class="bg-gradient-to-r from-blue-500 to-cyan-500 px-8 py-6">
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-6">
                         <h3 class="text-2xl font-bold text-white">ℹ️ Informasi Pribadi</h3>
                     </div>
                     <div class="p-8 space-y-6">
@@ -126,7 +126,7 @@
 
                 <!-- Learning Progress -->
                 <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden">
-                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 px-8 py-6">
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-6">
                         <h3 class="text-2xl font-bold text-white">📊 Statistik Pembelajaran</h3>
                     </div>
                     <div class="p-8">
@@ -173,7 +173,7 @@
             <div class="space-y-6">
                 <!-- Account Status Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-6">
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-6">
                         <h3 class="text-lg font-bold text-white">🔒 Keamanan Akun</h3>
                     </div>
                     <div class="p-6 space-y-4">
@@ -199,7 +199,7 @@
 
                 <!-- Member Status -->
                 <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden">
-                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-6">
+                    <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-6">
                         <h3 class="text-lg font-bold text-white">⭐ Status Member</h3>
                     </div>
                     <div class="p-6">
@@ -244,7 +244,7 @@
         <!-- Badges Section -->
         @if(Auth::user()->badges()->exists())
             <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden">
-                <div class="bg-gradient-to-r from-pink-500 to-rose-500 px-8 py-6">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-6">
                     <h3 class="text-2xl font-bold text-white flex items-center gap-3">
                         🏆 Pencapaian & Lencana
                     </h3>

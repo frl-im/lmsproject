@@ -7,7 +7,7 @@
     {{-- HEADER DASHBOARD --}}
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h2 class="font-black text-3xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 class="font-black text-3xl text-blue-600 dark:text-blue-400">
                 ⚡ {{ __('Selamat Datang, ' . Auth::user()->name) }}!
             </h2>
             <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
@@ -34,7 +34,7 @@
 
         {{-- DAILY QUEST --}}
         <div class="mb-8">
-            <div class="bg-gradient-to-r from-amber-400 via-orange-400 to-red-400 rounded-2xl shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl shadow-lg overflow-hidden">
                 <div class="relative p-8 text-white">
                     <h3 class="text-3xl font-black mb-2">🎯 Misi Hari Ini</h3>
                     <p class="text-sm opacity-90 mb-6">Selesaikan untuk mendapat reward bonus!</p>
@@ -88,26 +88,26 @@
 
         {{-- STATS --}}
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-blue-600 rounded-xl p-6 text-white">
-                <p class="text-sm font-bold">Level</p>
-                <p class="text-3xl font-black">
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-blue-600">
+                <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Level</p>
+                <p class="text-3xl font-black text-gray-900 dark:text-white">
                     {{ floor((Auth::user()->experience ?? 0) / 100) + 1 }}
                 </p>
             </div>
 
-            <div class="bg-green-600 rounded-xl p-6 text-white">
-                <p class="text-sm font-bold">Kursus Selesai</p>
-                <p class="text-3xl font-black">{{ Auth::user()->courses_completed ?? 0 }}</p>
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-green-600">
+                <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Kursus Selesai</p>
+                <p class="text-3xl font-black text-gray-900 dark:text-white">{{ Auth::user()->courses_completed ?? 0 }}</p>
             </div>
 
-            <div class="bg-purple-600 rounded-xl p-6 text-white">
-                <p class="text-sm font-bold">Badges</p>
-                <p class="text-3xl font-black">{{ Auth::user()->badges_count ?? 0 }}</p>
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-purple-600">
+                <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Badges</p>
+                <p class="text-3xl font-black text-gray-900 dark:text-white">{{ Auth::user()->badges_count ?? 0 }}</p>
             </div>
 
-            <div class="bg-pink-600 rounded-xl p-6 text-white">
-                <p class="text-sm font-bold">Streak</p>
-                <p class="text-3xl font-black">{{ Auth::user()->streak_days ?? 0 }}🔥</p>
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-pink-600">
+                <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Streak</p>
+                <p class="text-3xl font-black text-gray-900 dark:text-white">{{ Auth::user()->streak_days ?? 0 }}🔥</p>
             </div>
         </div>
 

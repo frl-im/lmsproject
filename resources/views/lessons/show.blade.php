@@ -10,7 +10,7 @@
             @endif
 
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">
-                <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-6">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-8 py-6">
                     <h1 class="text-3xl font-bold text-white">{{ $lesson->title }}</h1>
                     <p class="text-blue-100">{{ $lesson->module->title }}</p>
                 </div>

@@ -143,7 +143,6 @@ class User extends Authenticatable
     {
         $this->increment('points', $amount);
     }
-<<<<<<< HEAD
 
     /**
      * Add payment to user.
@@ -152,9 +151,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Payment::class);
     }
-}
-=======
-   public function lessons()
+
+    public function lessons()
     {
         // Menggunakan tabel pivot 'user_progress'
         // Sesuaikan 'lesson_id' dan 'user_id' jika nama kolom berbeda
@@ -171,4 +169,3 @@ class User extends Authenticatable
         return $this->hasMany(Certificate::class);
     }
 }
->>>>>>> cfa7e365e461ec6d1d483386712e22751bc8f6c2

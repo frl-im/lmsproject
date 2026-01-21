@@ -39,10 +39,8 @@ class CourseController extends Controller
         // Kirim semua data ke view
         return view('courses.show', compact('course', 'badges', 'courses', 'user'));
     }
-<<<<<<< HEAD
 
-
-        /**
+    /**
      * Menampilkan kursus khusus Premium
      */
     public function premium()
@@ -59,8 +57,4 @@ class CourseController extends Controller
 
         return view('courses.premium', compact('courses'));
     }
-
-=======
-    
->>>>>>> cfa7e365e461ec6d1d483386712e22751bc8f6c2
 }

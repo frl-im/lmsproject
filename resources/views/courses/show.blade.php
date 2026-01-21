@@ -6,7 +6,7 @@
             
             <!-- Header Course -->
             <div class="mb-8">
-                <div class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl shadow-lg overflow-hidden">
                     <div class="p-8 md:p-12 text-white">
                         <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ $course->title }}</h1>
                         <p class="text-lg text-blue-100 mb-6">{{ $course->description }}</p>

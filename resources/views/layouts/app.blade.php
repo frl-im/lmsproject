@@ -19,12 +19,12 @@
     <body class="font-poppins antialiased bg-gray-50 dark:bg-gray-900">
         <div class="flex min-h-screen flex-col">
             <!-- NAVBAR -->
-        <header class="bg-white dark:bg-gray-800 shadow">
-            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                 <!-- KIRI -->
                 <div class="flex items-center gap-8">
-                    <a href="{{ route('dashboard') }}" class="text-lg font-bold text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        {{ config('app.name', 'LMS') }}
+                    <a href="{{ route('dashboard') }}" class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        📚 LMS Pro
                     </a>
                     
                     @auth

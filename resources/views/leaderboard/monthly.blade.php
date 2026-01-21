@@ -6,7 +6,7 @@
         
         <!-- Header -->
         <div class="mb-8">
-            <div class="bg-gradient-to-r from-yellow-500 to-orange-600 dark:from-yellow-700 dark:to-orange-800 rounded-xl shadow-lg p-8 text-white">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl shadow-lg p-8 text-white">
                 <div class="flex items-center justify-between mb-4">
                     <a href="{{ route('dashboard') }}" class="text-yellow-100 hover:text-white transition-colors">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
