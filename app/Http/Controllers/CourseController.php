@@ -39,4 +39,5 @@ class CourseController extends Controller
         // Kirim semua data ke view
         return view('courses.show', compact('course', 'badges', 'courses', 'user'));
     }
+    
 }

@@ -132,4 +132,12 @@ class User extends Authenticatable
     {
         $this->increment('points', $amount);
     }
+   public function lessons()
+{
+    // Menggunakan tabel pivot 'user_progress'
+    // Sesuaikan 'lesson_id' dan 'user_id' jika nama kolom berbeda
+    return $this->belongsToMany(Lesson::class, 'user_progress', 'user_id', 'lesson_id')
+                ->withPivot('is_completed', 'xp_awarded', 'completed_at')
+                ->withTimestamps();
+}
 }

@@ -2,27 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\Lesson;
-use App\Models\UserProgress;
+use App\Models\UserProgress; // Tambahkan ini agar complete() tidak error
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth; // Tambahkan ini agar Auth::user() tidak error
+use Illuminate\Support\Facades\DB;
 
 class LessonController extends Controller
 {
     /**
-     * Menampilkan halaman materi belajar
+     * Menampilkan halaman lesson/materi.
+     * Kita tambahkan parameter $course_id di depan karena route-nya nested resource.
      */
-    public function show(Lesson $lesson)
+    public function show($course_id, Lesson $lesson)
     {
-        dd('Lesson Controller Berhasil Dipanggil!', $lesson);
-        // 1. Load relasi agar navigasi breadcrumb berjalan
+        // $course_id menangkap parameter pertama dari URL (/courses/{1}/...)
+        // $lesson menangkap parameter kedua dan otomatis di-convert jadi Model Lesson
+
         $lesson->load(['module.course']);
         
-        // 2. Load badges untuk layout (INI SOLUSI AGAR TIDAK BLANK) 🛠️
         $user = Auth::user();
         $badges = $user ? $user->badges : collect([]);
 
-        // Kirim data ke View
         return view('lessons.show', compact('lesson', 'badges'));
     }
 
@@ -32,22 +34,17 @@ class LessonController extends Controller
     public function complete(Request $request, Lesson $lesson)
     {
         $user = Auth::user();
-        
-        // Cek apakah user sudah pernah menyelesaikan materi ini?
-        $hasCompleted = UserProgress::where('user_id', $user->id)
+
+        // Cek sudah selesai belum
+        $exists = UserProgress::where('user_id', $user->id)
             ->where('lesson_id', $lesson->id)
-            ->where('is_completed', true)
             ->exists();
 
-        if ($hasCompleted) {
-            return response()->json([
-                'success' => true, // Tetap true agar tombol jadi 'Selesai'
-                'message' => 'Kamu sudah menyelesaikan materi ini sebelumnya.',
-                'xp_reward' => 0
-            ]);
+        if ($exists) {
+            return response()->json(['message' => 'Sudah selesai sebelumnya', 'xp_reward' => 0]);
         }
 
-        // Simpan Progress ke Database
+        // Simpan Progress
         UserProgress::create([
             'user_id' => $user->id,
             'lesson_id' => $lesson->id,
@@ -57,21 +54,18 @@ class LessonController extends Controller
             'xp_awarded' => true
         ]);
 
-        // Tambahkan XP ke User
+        // Tambah XP
         $xp = $lesson->xp_reward ?? 10;
         
+        // Cek apakah method addXP tersedia di model User
         if (method_exists($user, 'addXP')) {
             $user->addXP($xp);
         } else {
+            // Fallback manual jika method addXP belum ada
             $user->experience = ($user->experience ?? 0) + $xp;
             $user->save();
         }
 
-        // Kirim respon sukses ke Javascript
-        return response()->json([
-            'success' => true, // <--- INI KUNCI AGAR TOMBOL BERUBAH 🔑
-            'message' => 'Hore! Materi Selesai. +' . $xp . ' XP',
-            'xp_reward' => $xp
-        ]);
+        return response()->json(['message' => 'Selesai!', 'xp_reward' => $xp]);
     }
 }

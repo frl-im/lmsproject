@@ -64,8 +64,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     Route::get('/courses/{course}', [CourseController::class, 'show'])
         ->name('courses.show');
 
-    // Lesson (materi / quiz)
-    Route::get('/lessons/{lesson}', [LessonController::class, 'show'])
+    // Lesson (materi / quiz) - dengan course parameter untuk breadcrumb
+    Route::get('/courses/{course}/lessons/{lesson}', [LessonController::class, 'show'])
         ->name('lessons.show');
 
     // Selesaikan lesson
@@ -73,7 +73,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('lessons.complete');
 
     // Quiz user
-    Route::get('/lessons/{lesson}/quiz', [QuizController::class, 'show'])
+    Route::get('/courses/{course}/lessons/{lesson}/quiz', [QuizController::class, 'show'])
         ->name('quiz.show');
 
     Route::post('/lessons/{lesson}/quiz/submit', [QuizController::class, 'submit'])
@@ -114,6 +114,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     });
 
     });
+
+
 
 // ROUTE ADMIN
 
