@@ -61,6 +61,9 @@ class CompletionController extends Controller
             $xpReward = $lesson->xp_reward ?? 10;
             $user->addXP($xpReward);
 
+            // Track daily mission for lesson completion
+            $user->trackLessonCompletion();
+
             DB::commit();
 
             // Check if module is completed

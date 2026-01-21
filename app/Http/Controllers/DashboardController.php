@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\DailyMission;
 use App\Models\UserProgress; 
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,9 @@ class DashboardController extends Controller
     public function index(): View
     {
         $user = Auth::user();
+
+        // Get daily missions
+        $dailyMissions = DailyMission::getTodaysMissions($user->id);
 
         $courses = Course::with(['modules.lessons'])
             ->latest()
@@ -50,6 +54,6 @@ class DashboardController extends Controller
             return $course;
         });
 
-        return view('dashboard', compact('user', 'courses'));
+        return view('dashboard', compact('user', 'courses', 'dailyMissions'));
     }
 }

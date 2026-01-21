@@ -13,6 +13,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\ConsultController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Api\DailyMissionController;
 
 
 // ADMIN CONTROLLERS
@@ -160,6 +161,18 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
         // Hapus soal
         Route::delete('quiz/{question}', [QuestionController::class, 'destroy'])
             ->name('quiz.destroy');
+    });
+
+    // API Routes for Daily Missions
+    Route::middleware(['auth'])->prefix('api')->group(function () {
+        Route::get('/daily-missions', [DailyMissionController::class, 'getTodaysMissions'])
+            ->name('api.daily-missions.today');
+        
+        Route::post('/daily-missions/{mission}/complete', [DailyMissionController::class, 'completeMission'])
+            ->name('api.daily-missions.complete');
+
+        Route::get('/daily-missions/statistics', [DailyMissionController::class, 'getStatistics'])
+            ->name('api.daily-missions.statistics');
     });
 
 // ROUTE AUTH BAWAAN

@@ -117,6 +117,9 @@ class QuizController extends Controller
                 // Award XP to user
                 $user->addXP($xpReward);
 
+                // Track daily mission for quiz completion
+                $user->trackQuizCompletion();
+
                 DB::commit();
 
                 return redirect()->route('lessons.show', $lesson)->with([
