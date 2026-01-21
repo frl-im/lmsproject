@@ -12,7 +12,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::withCount('modules')->get();
+        $courses = Course::withCount('modules.lessons')->get();
         return view('dashboard', compact('courses'));
     }
 

@@ -12,6 +12,8 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\ConsultController;
+use App\Http\Controllers\DashboardController;
+
 
 // ADMIN CONTROLLERS
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -51,8 +53,11 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
     Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard siswa
-    Route::get('/dashboard', [HomeController::class, 'dashboard'])
-        ->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
+
 
     // Kursus
     Route::get('/courses/{course}', [CourseController::class, 'show'])
