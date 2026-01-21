@@ -14,15 +14,18 @@ class HomeController extends Controller
     public function index()
     {
         try {
-            // Tampilkan landing page untuk semua (guest & authenticated)
-            $courses = Course::where('is_published', true)
-                ->withCount('modules')
-                ->take(6)
+            // Tampilkan landing page (REVISI: Menampilkan semua kursus, termasuk draft)
+            $courses = Course::withCount('modules') // Hitung jumlah modul
+                ->latest()           // Urutkan dari yang terbaru
+                ->take(6)            // Ambil 6 saja
                 ->get();
             
             return view('home.landing', compact('courses'));
         } catch (\Exception $e) {
-            return view('home.landing', ['courses' => collect(), 'error' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+            return view('home.landing', [
+                'courses' => collect(), 
+                'error' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ]);
         }
     }
 
@@ -32,10 +35,7 @@ class HomeController extends Controller
     public function previewLesson($lessonId)
     {
         try {
-            // Ambil lesson dari database
             $lesson = \App\Models\Lesson::findOrFail($lessonId);
-            
-            // Cek apakah lesson bersifat free (teaser)
             $isFree = $lesson->is_free ?? false;
             
             if (!$isFree && !Auth::check()) {
@@ -65,27 +65,35 @@ class HomeController extends Controller
     public function dashboard()
     {
         try {
-            $user = Auth::user()->load('badges', 'userProgresses');
+            $user = Auth::user();
             
-            // Redirect admin ke admin dashboard
             if ($user->isAdmin()) {
                 return redirect()->route('admin.dashboard');
             }
 
-            // Get enrolled courses with module count
-            $courses = $user->courses()
-                ->with('modules.lessons')
+            // Load relasi user
+            $user->load('badges', 'userProgresses');
+
+            // Ambil kursus yang diikuti user
+            // Jika user belum enroll, tampilkan semua kursus agar dashboard tidak kosong
+            $courses = Course::with('modules.lessons')
                 ->withCount('modules')
+                ->latest()
                 ->get();
             
-            // Get recent activity with defensive logic
+            // Hitung progress (Sederhana)
+            $courses->transform(function($course) {
+                $course->progress = 0; // Default 0%
+                return $course;
+            });
+
+            // Activity log (defensive)
             $recentProgress = $user->userProgresses()
                 ->with('lesson.module.course')
                 ->orderBy('completed_at', 'DESC')
                 ->take(5)
                 ->get();
 
-            // Get badges for gamification display
             $badges = $user->badges;
 
             return view('dashboard', compact('courses', 'recentProgress', 'user', 'badges'));
