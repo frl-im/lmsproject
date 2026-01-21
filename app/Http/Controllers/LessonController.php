@@ -1,58 +1,42 @@
-<?php
-
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\Lesson;
-use App\Models\UserProgress;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LessonController extends Controller
 {
-    public function show(Lesson $lesson)
+    public function show(Course $course, Lesson $lesson)
     {
-        $lesson->load(['module.course']);
+        // Load relasi agar navigasi lancar
+        $lesson->load(['module.lessons', 'module.course']);
         
-        $user = Auth::user();
-        $badges = $user ? $user->badges : collect([]);
-
-        return view('lessons.show', compact('lesson', 'badges'));
+        return view('lessons.show', compact('lesson'));
     }
 
     public function complete(Request $request, Lesson $lesson)
     {
-        $user = Auth::user();
+        $user = $request->user();
 
-        // Cek sudah selesai belum
-        $exists = UserProgress::where('user_id', $user->id)
+        // Cek apakah sudah pernah diselesaikan untuk menghindari manipulasi XP
+        $alreadyCompleted = DB::table('lesson_user')
+            ->where('user_id', $user->id)
             ->where('lesson_id', $lesson->id)
-            ->where('is_completed', true)
             ->exists();
 
-        if ($exists) {
-            return response()->json(['message' => 'Sudah selesai sebelumnya', 'xp_reward' => 0]);
+        if (!$alreadyCompleted) {
+            // Catat penyelesaian dan tambah XP
+            $user->lessons()->attach($lesson->id, ['completed_at' => now()]);
+            $user->increment('xp', $lesson->xp_reward ?? 10);
+            
+            return response()->json([
+                'success' => true, 
+                'message' => 'Materi selesai!', 
+                'xp_gained' => $lesson->xp_reward ?? 10
+            ]);
         }
 
-        // Simpan Progress
-        UserProgress::create([
-            'user_id' => $user->id,
-            'lesson_id' => $lesson->id,
-            'course_id' => $lesson->module->course_id,
-            'is_completed' => true,
-            'completed_at' => now(),
-            'xp_awarded' => true
-        ]);
-
-        // Tambah XP
-        $xp = $lesson->xp_reward ?? 10;
-        if (method_exists($user, 'addXP')) {
-            $user->addXP($xp);
-        } else {
-            // Fallback manual jika method addXP belum ada
-            $user->experience = ($user->experience ?? 0) + $xp;
-            $user->save();
-        }
-
-        return response()->json(['message' => 'Selesai!', 'xp_reward' => $xp]);
+        return response()->json(['success' => false, 'message' => 'Sudah diselesaikan sebelumnya.']);
     }
 }
