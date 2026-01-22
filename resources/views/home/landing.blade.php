@@ -22,27 +22,6 @@
     </div>
 </section>
 
-<section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">
-            Belajar Jadi Lebih Seru 🚀
-        </h1>
-        <p class="text-xl md:text-2xl mb-8 text-blue-100">
-            Platform pembelajaran interaktif dengan gamifikasi penuh, kuis menarik, dan tracking progress real-time
-        </p>
-        <div class="flex flex-wrap justify-center gap-4">
-            @if(!Auth::check())
-                <a href="{{ route('register') }}" class="px-8 py-3 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition">
-                    Daftar Gratis
-                </a>
-            @endif
-            <a href="#courses" class="px-8 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-blue-600 transition">
-                Lihat Kursus
-            </a>
-        </div>
-    </div>
-</section>
-
 <section id="features" class="py-20 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-4xl font-bold text-center mb-16">Fitur Unggulan</h2>
@@ -52,6 +31,8 @@
                 <h3 class="text-2xl font-bold mb-4">Gamifikasi Penuh</h3>
                 <p class="text-gray-600">Dapatkan XP, poin, badge, dan naik leaderboard saat belajar</p>
             </div>
+            <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition">
+                <div class="text-4xl mb-4">📊</div>
                 <h3 class="text-2xl font-bold mb-4">Progress Tracking</h3>
                 <p class="text-gray-600">Pantau perkembangan belajar dengan dashboard interaktif</p>
             </div>
