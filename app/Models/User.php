@@ -154,11 +154,9 @@ class User extends Authenticatable
 
     public function lessons()
     {
-        // Menggunakan tabel pivot 'user_progress'
-        // Sesuaikan 'lesson_id' dan 'user_id' jika nama kolom berbeda
         return $this->belongsToMany(Lesson::class, 'user_progress', 'user_id', 'lesson_id')
-                    ->withPivot('is_completed', 'xp_awarded', 'completed_at')
-                    ->withTimestamps();
+            ->withPivot('is_completed', 'completed_at', 'xp_awarded', 'quiz_score')
+            ->withTimestamps();
     }
 
     /**
@@ -168,4 +166,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Certificate::class);
     }
+
+    //  public function lessons()
+    //     {
+    //         return $this->belongsToMany(Lesson::class, 'user_progress')
+    //             ->withPivot('is_completed', 'completed_at', 'xp_awarded')
+    //             ->withTimestamps();
+    //     }
+    // public function lessons()
+    // {
+    //     return $this->belongsToMany(Lesson::class, 'user_progress', 'user_id', 'lesson_id')
+    //         ->withPivot('is_completed', 'xp_awarded', 'completed_at')
+    //         ->withTimestamps();
+    // }
 }

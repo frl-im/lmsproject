@@ -14,11 +14,10 @@ class CourseController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $courses = Course::withCount('modules')->get();
-        // Pastikan variabel badges selalu terkirim
+        $courses = Course::withCount('modules')->latest()->get();
         $badges = $user ? $user->badges : collect([]);
 
-        return view('dashboard', compact('courses', 'user', 'badges'));
+        return view('courses.index', compact('courses', 'user', 'badges'));
     }
 
     /**

@@ -33,4 +33,16 @@ class Course extends Model
     {
         return $this->hasMany(UserProgress::class);
     }
+
+    /**
+     * Cek apakah course sudah selesai oleh user tertentu
+     */
+    public function isCompletedByUser($user)
+    {
+        // Course dianggap selesai jika semua lesson pada course ini sudah completed oleh user
+        $lessonIds = $this->lessons()->pluck('lessons.id');
+        if ($lessonIds->isEmpty()) return false;
+        $completedCount = $user->lessons()->whereIn('lesson_id', $lessonIds)->wherePivot('is_completed', true)->count();
+        return $completedCount === $lessonIds->count();
+    }
 }

@@ -19,6 +19,11 @@ class CompletionController extends Controller
     public function completeLesson(Request $request, Lesson $lesson)
     {
         try {
+            \Log::debug('DEBUG: Masuk completeLesson', [
+                'user_id' => Auth::id(),
+                'lesson_id' => $lesson->id,
+                'lesson_module_id' => $lesson->module_id,
+            ]);
             $user = Auth::user();
 
             // Check if lesson already completed (anti-farming)
@@ -32,9 +37,7 @@ class CompletionController extends Controller
             DB::beginTransaction();
 
             if ($existingProgress && $existingProgress->is_completed) {
-                // SUDAH PERNAH SUBMIT - Tidak tambah XP
                 DB::commit();
-                
                 return response()->json([
                     'success' => false,
                     'message' => 'Latihan selesai (Tanpa Poin Tambahan)',
@@ -43,7 +46,6 @@ class CompletionController extends Controller
                 ], 422);
             }
 
-            // FIRST TIME - Create or update progress
             $progress = UserProgress::updateOrCreate(
                 [
                     'user_id' => $user->id,
@@ -57,20 +59,21 @@ class CompletionController extends Controller
                 ]
             );
 
-            // Award XP to user (only for first time)
             $xpReward = $lesson->xp_reward ?? 10;
             $user->addXP($xpReward);
-
-            // Track daily mission for lesson completion
             $user->trackLessonCompletion();
 
             DB::commit();
 
-            // Check if module is completed
             $moduleCompleted = $this->checkModuleCompletion($lesson->module, $user->id);
-
-            // Check if course is completed
             $courseCompleted = $this->checkCourseCompletion($course, $user->id);
+
+            \Log::debug('DEBUG: completeLesson sukses', [
+                'user_id' => $user->id,
+                'lesson_id' => $lesson->id,
+                'progress_id' => $progress->id ?? null,
+                'xp_reward' => $xpReward,
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -82,7 +85,12 @@ class CompletionController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-
+            \Log::error('ERROR: completeLesson gagal', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => Auth::id(),
+                'lesson_id' => $lesson->id,
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),

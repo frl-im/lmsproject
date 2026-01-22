@@ -21,11 +21,30 @@ class LessonController extends Controller
         // $lesson menangkap parameter kedua dan otomatis di-convert jadi Model Lesson
 
         $lesson->load(['module.course']);
-        
         $user = Auth::user();
         $badges = $user ? $user->badges : collect([]);
 
-        return view('lessons.show', compact('lesson', 'badges'));
+        // --- LOGIKA NEXT LESSON LINTAS MODUL ---
+        $next_lesson = null;
+        $allLessonsInModule = $lesson->module->lessons()->orderBy('id')->get();
+        $next = $allLessonsInModule->where('id', '>', $lesson->id)->first();
+        if ($next) {
+            $next_lesson = $next;
+        } else {
+            // Cari modul berikutnya dalam course yang sama
+            $currentModule = $lesson->module;
+            $course = $currentModule->course;
+            $modules = $course->modules()->orderBy('id')->get();
+            $nextModule = $modules->where('id', '>', $currentModule->id)->first();
+            if ($nextModule) {
+                $firstLessonNextModule = $nextModule->lessons()->orderBy('id')->first();
+                if ($firstLessonNextModule) {
+                    $next_lesson = $firstLessonNextModule;
+                }
+            }
+        }
+
+        return view('lessons.show', compact('lesson', 'badges', 'next_lesson'));
     }
 
     /**
@@ -33,39 +52,25 @@ class LessonController extends Controller
      */
     public function complete(Request $request, Lesson $lesson)
     {
-        $user = Auth::user();
-
-        // Cek sudah selesai belum
-        $exists = UserProgress::where('user_id', $user->id)
-            ->where('lesson_id', $lesson->id)
-            ->exists();
-
-        if ($exists) {
-            return response()->json(['message' => 'Sudah selesai sebelumnya', 'xp_reward' => 0]);
-        }
-
-        // Simpan Progress
-        UserProgress::create([
-            'user_id' => $user->id,
-            'lesson_id' => $lesson->id,
-            'course_id' => $lesson->module->course_id,
-            'is_completed' => true,
-            'completed_at' => now(),
-            'xp_awarded' => true
-        ]);
-
-        // Tambah XP
-        $xp = $lesson->xp_reward ?? 10;
-        
-        // Cek apakah method addXP tersedia di model User
-        if (method_exists($user, 'addXP')) {
+        try {
+            $user = Auth::user();
+            $exists = $user->lessons()->where('lesson_id', $lesson->id)->exists();
+            if ($exists) {
+                return response()->json(['success' => false, 'message' => 'Sudah selesai sebelumnya', 'xp_reward' => 0], 200);
+            }
+            $xp = $lesson->xp_reward ?? 10;
+            $user->lessons()->syncWithoutDetaching([
+                $lesson->id => [
+                    'is_completed' => true,
+                    'completed_at' => now(),
+                    'xp_awarded' => $xp,
+                    'course_id' => $lesson->module->course_id,
+                ]
+            ]);
             $user->addXP($xp);
-        } else {
-            // Fallback manual jika method addXP belum ada
-            $user->experience = ($user->experience ?? 0) + $xp;
-            $user->save();
+            return response()->json(['success' => true, 'message' => 'Selesai!', 'xp_reward' => $xp], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
-
-        return response()->json(['message' => 'Selesai!', 'xp_reward' => $xp]);
     }
 }

@@ -2,41 +2,45 @@
 
 @section('content')
 
-<div class="py-12 px-4">
-
-    {{-- HEADER DASHBOARD --}}
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h2 class="font-black text-3xl text-blue-600 dark:text-blue-400">
-                ⚡ {{ __('Selamat Datang, ' . Auth::user()->name) }}!
-            </h2>
-            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                Lanjutkan petualangan belajarmu hari ini
-            </p>
-        </div>
-
-        <div class="flex items-center space-x-6">
-            <div class="text-right">
-                <p class="text-xs text-gray-600 dark:text-gray-400 uppercase font-bold">Total XP</p>
-                <p class="text-2xl font-black text-yellow-500" id="header-xp" data-user-xp="{{ Auth::user()->experience ?? 0 }}">{{ Auth::user()->experience ?? 0 }}</p>
-            </div>
-
-            <div class="w-1 h-10 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full"></div>
-
-            <div class="text-right">
-                <p class="text-xs text-gray-600 dark:text-gray-400 uppercase font-bold">Points</p>
-                <p class="text-2xl font-black text-green-500" id="header-points" data-user-points="{{ Auth::user()->points ?? 0 }}">{{ Auth::user()->points ?? 0 }}</p>
-            </div>
-        </div>
-    </div>
-
+{{-- DASHBOARD HERO HEADER --}}
+<div class="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 text-white py-12 px-4 mb-8">
     <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl md:text-5xl font-black mb-2">⚡ Selamat Datang, {{ Auth::user()->name }}!</h1>
+        <p class="text-blue-100 text-lg">Lanjutkan petualangan belajarmu hari ini</p>
+    </div>
+</div>
+
+<div class="py-8 px-4">
+    <div class="max-w-7xl mx-auto">
+        
+        {{-- USER STATS --}}
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="text-center">
+                <p class="text-xs text-gray-600 dark:text-gray-400 uppercase font-bold mb-1">Total XP</p>
+                <p class="text-3xl font-black text-yellow-500" id="header-xp" data-user-xp="{{ Auth::user()->experience ?? 0 }}">{{ Auth::user()->experience ?? 0 }}</p>
+            </div>
+
+            <div class="text-center">
+                <p class="text-xs text-gray-600 dark:text-gray-400 uppercase font-bold mb-1">Level</p>
+                <p class="text-3xl font-black text-blue-600 dark:text-blue-400">{{ floor((Auth::user()->experience ?? 0) / 100) + 1 }}</p>
+            </div>
+
+            <div class="text-center">
+                <p class="text-xs text-gray-600 dark:text-gray-400 uppercase font-bold mb-1">Points</p>
+                <p class="text-3xl font-black text-green-500" id="header-points" data-user-points="{{ Auth::user()->points ?? 0 }}">{{ Auth::user()->points ?? 0 }}</p>
+            </div>
+
+            <div class="text-center">
+                <p class="text-xs text-gray-600 dark:text-gray-400 uppercase font-bold mb-1">Badges</p>
+                <p class="text-3xl font-black text-purple-500">{{ Auth::user()->badges_count ?? 0 }}</p>
+            </div>
+        </div>
 
         {{-- DAILY QUEST --}}
         <div class="mb-8">
-            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl shadow-lg overflow-hidden">
+            <h2 class="text-2xl font-black mb-4 text-gray-900 dark:text-white">🎯 Misi Hari Ini</h2>
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg overflow-hidden">
                 <div class="relative p-8 text-white">
-                    <h3 class="text-3xl font-black mb-2">🎯 Misi Hari Ini</h3>
                     <p class="text-sm opacity-90 mb-6">Selesaikan untuk mendapat reward bonus!</p>
 
                     <div class="grid grid-cols-3 gap-4" id="missions-container">
@@ -88,36 +92,34 @@
 
         {{-- STATS --}}
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-blue-600">
-                <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Level</p>
-                <p class="text-3xl font-black text-gray-900 dark:text-white">
-                    {{ floor((Auth::user()->experience ?? 0) / 100) + 1 }}
-                </p>
-            </div>
-
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-green-600">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border-l-4 border-blue-600 p-6">
                 <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Kursus Selesai</p>
-                <p class="text-3xl font-black text-gray-900 dark:text-white">{{ Auth::user()->courses_completed ?? 0 }}</p>
+                <p class="text-3xl font-black text-gray-900 dark:text-white mt-2">{{ Auth::user()->courses_completed ?? 0 }}</p>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-purple-600">
-                <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Badges</p>
-                <p class="text-3xl font-black text-gray-900 dark:text-white">{{ Auth::user()->badges_count ?? 0 }}</p>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border-l-4 border-green-600 p-6">
+                <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Materi Selesai</p>
+                <p class="text-3xl font-black text-gray-900 dark:text-white mt-2">0</p>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-4 border-pink-600">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border-l-4 border-purple-600 p-6">
+                <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Badges Terkumpul</p>
+                <p class="text-3xl font-black text-gray-900 dark:text-white mt-2">{{ Auth::user()->badges_count ?? 0 }}</p>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border-l-4 border-pink-600 p-6">
                 <p class="text-sm font-bold text-gray-600 dark:text-gray-400">Streak</p>
-                <p class="text-3xl font-black text-gray-900 dark:text-white">{{ Auth::user()->streak_days ?? 0 }}🔥</p>
+                <p class="text-3xl font-black text-gray-900 dark:text-white mt-2">{{ Auth::user()->streak_days ?? 0 }}🔥</p>
             </div>
         </div>
 
         {{-- LEADERBOARD SHORTCUT --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <a href="{{ route('leaderboard.index') }}" class="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+            <a href="{{ route('leaderboard.index') }}" class="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg shadow-lg overflow-hidden p-6 text-white hover:shadow-xl transition-all transform hover:scale-105">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-semibold opacity-90">📊 Global Leaderboard</p>
-                        <p class="text-2xl font-black mt-1">Lihat Ranking Global</p>
+                        <p class="text-2xl font-black mt-2">Lihat Ranking Global</p>
                     </div>
                     <svg class="w-12 h-12 opacity-50" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M17.293 13.293A8 8 0 016.707 2.707a8 8 0 1010.586 10.586z"></path>
@@ -125,11 +127,11 @@
                 </div>
             </a>
             
-            <a href="{{ route('leaderboard.monthly') }}" class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+            <a href="{{ route('leaderboard.monthly') }}" class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-lg shadow-lg overflow-hidden p-6 text-white hover:shadow-xl transition-all transform hover:scale-105">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-semibold opacity-90">📅 Ranking Bulanan</p>
-                        <p class="text-2xl font-black mt-1">Lihat Score Bulan Ini</p>
+                        <p class="text-2xl font-black mt-2">Lihat Score Bulan Ini</p>
                     </div>
                     <svg class="w-12 h-12 opacity-50" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v2h16V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
@@ -139,30 +141,33 @@
         </div>
 
         {{-- COURSES --}}
-        <h2 class="text-2xl font-black mb-6">🚀 Petualanganku</h2>
+        <h2 class="text-2xl font-black mb-6 text-gray-900 dark:text-white">🚀 Petualanganku</h2>
 
         @if($courses->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach ($courses as $course)
-                    <a href="{{ route('courses.show', $course) }}" class="block bg-white dark:bg-slate-800 rounded-xl shadow p-6">
-                        <h3 class="font-black text-lg mb-2">{{ $course->title }}</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                            {{ $course->description }}
-                        </p>
+                    <a href="{{ route('courses.show', $course) }}" class="group bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:scale-105">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-24 group-hover:from-blue-600 group-hover:to-purple-700 transition-all"></div>
+                        <div class="p-6">
+                            <h3 class="font-black text-lg text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ $course->title }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                                {{ $course->description }}
+                            </p>
 
-                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden mb-3">
-                            <div class="h-full bg-blue-500" style="width: {{ $course->progress ?? 0 }}%"></div>
+                            <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-3">
+                                <div class="h-full bg-blue-600 dark:bg-blue-500 transition-all" style="width: {{ $course->progress ?? 0 }}%"></div>
+                            </div>
+
+                            <p class="text-xs font-bold text-gray-700 dark:text-gray-300">
+                                Progress: {{ $course->progress ?? 0 }}%
+                            </p>
                         </div>
-
-                        <p class="text-xs font-bold">
-                            Progress: {{ $course->progress ?? 0 }}%
-                        </p>
                     </a>
                 @endforeach
             </div>
         @else
-            <div class="text-center py-12 text-gray-500">
-                📚 Belum ada kursus tersedia
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 text-center">
+                <p class="text-gray-500 dark:text-gray-400 text-lg">📚 Belum ada kursus tersedia</p>
             </div>
         @endif
 

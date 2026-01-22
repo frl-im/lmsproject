@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.landing')
 
 @section('content')
 <nav class="bg-white shadow-sm sticky top-0 z-50">

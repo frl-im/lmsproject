@@ -155,92 +155,28 @@
         if (quizAlert) {
             const isPassed = quizAlert.querySelector('.bg-green-100') !== null;
             const isOrange = quizAlert.querySelector('.bg-orange-100') !== null;
-            
             if (isPassed) {
-                const percentage = quizAlert.textContent.match(/(\d+)%/)[1];
-                const correctCount = quizAlert.textContent.match(/(\d+)\/(\d+)/)[1];
-                const totalQuestions = quizAlert.textContent.match(/(\d+)\/(\d+)/)[2];
-                const score = quizAlert.textContent.match(/poin/i) ? 
-                    quizAlert.textContent.split('poin')[0].trim().split(' ').pop() : '0';
-                const xpReward = quizAlert.textContent.match(/(\d+)\s*XP/)[1];
-                
-                Swal.fire({
-                    title: '🎉 Selamat!',
-                    html: `
-                        <p class="text-lg font-semibold mb-4">Kamu Lulus Kuis!</p>
-                        <div class="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg p-6 mb-4">
-                            <div class="mb-3">
-                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Skor</p>
-                                <p class="text-4xl font-bold text-green-600">${percentage}%</p>
-                            </div>
-                            <div class="text-sm text-gray-700 dark:text-gray-200 mb-3">
-                                <p>${correctCount} dari ${totalQuestions} jawaban benar</p>
-                            </div>
-                            <div class="border-t border-green-300 dark:border-green-700 pt-3">
-                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Reward</p>
-                                <p class="text-3xl font-bold text-yellow-600">+${xpReward} XP</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-700 dark:text-gray-300">Lanjutkan ke materi berikutnya! 🚀</p>
-                    `,
-                    icon: 'success',
-                    confirmButtonText: 'Kembali ke Materi',
-                    confirmButtonColor: '#10b981',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = '{{ route("lessons.show", ["course" => $lesson->module->course_id, "lesson" => $lesson->id]) }}';
-                    }
-                });
+                // ...existing code...
             } else if (isOrange) {
-                const percentage = quizAlert.textContent.match(/(\d+)%/)[1];
-                const correctCount = quizAlert.textContent.match(/(\d+)\/(\d+)/)[1];
-                const totalQuestions = quizAlert.textContent.match(/(\d+)\/(\d+)/)[2];
-                
-                Swal.fire({
-                    title: '⚠️ Oops!',
-                    html: `
-                        <p class="text-lg font-semibold mb-4">Skor Kurang</p>
-                        <div class="bg-gradient-to-r from-orange-100 to-yellow-100 dark:from-orange-900/30 dark:to-yellow-900/30 rounded-lg p-6 mb-4">
-                            <div class="mb-3">
-                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Skor Anda</p>
-                                <p class="text-4xl font-bold text-orange-600">${percentage}%</p>
-                            </div>
-                            <div class="text-sm text-gray-700 dark:text-gray-200">
-                                <p>${correctCount} dari ${totalQuestions} jawaban benar</p>
-                            </div>
-                        </div>
-                        <p class="text-gray-700 dark:text-gray-300 mb-3">Untuk lulus, kamu butuh minimal <strong>70%</strong> jawaban benar.</p>
-                        <p class="text-gray-600 dark:text-gray-400">Jangan putus asa! Coba lagi dan pelajari kembali materinya. 💪</p>
-                    `,
-                    icon: 'warning',
-                    confirmButtonText: 'Coba Lagi',
-                    confirmButtonColor: '#f97316',
-                    showCancelButton: true,
-                    cancelButtonText: 'Kembali ke Materi',
-                    cancelButtonColor: '#6b7280'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.reload();
-                    } else if (result.dismiss) {
-                        window.location.href = '{{ route("lessons.show", ["course" => $lesson->module->course_id, "lesson" => $lesson->id]) }}';
-                    }
-                });
+                // ...existing code...
             }
         }
-        
-        // Handle quiz form submission
+        // Intercept quiz form submission
         const quizForm = document.getElementById('quiz-form');
         if (quizForm) {
             quizForm.addEventListener('submit', function(e) {
-                // Show loading alert
+                e.preventDefault();
                 Swal.fire({
-                    title: '⏳ Mengirim Jawaban...',
-                    html: 'Mohon tunggu sebentar.',
-                    icon: 'info',
-                    allowOutsideClick: false,
-                    didOpen: (modal) => {
-                        Swal.showLoading();
+                    title: 'Yakin ingin mengumpulkan jawaban?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, kumpulkan!',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#10b981',
+                    cancelButtonColor: '#6b7280',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        quizForm.submit();
                     }
                 });
             });

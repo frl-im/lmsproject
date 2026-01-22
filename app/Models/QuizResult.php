@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class QuizResult extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'lesson_id',
@@ -16,11 +19,6 @@ class QuizResult extends Model
         'passed',
     ];
 
-    protected $casts = [
-        'passed' => 'boolean',
-        'score' => 'integer',
-    ];
-
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -29,12 +27,5 @@ class QuizResult extends Model
     public function lesson()
     {
         return $this->belongsTo(Lesson::class);
-    }
-
-    public function getScorePercentageAttribute()
-    {
-        return $this->total_questions > 0 
-            ? round(($this->correct_answers / $this->total_questions) * 100)
-            : 0;
     }
 }

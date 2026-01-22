@@ -80,9 +80,8 @@
 
                 <span class="text-gray-500 text-sm">Materi {{ $currentNumber }} dari {{ $allLessonsInModule->count() }}</span>
 
-                @if($next)
-                    {{-- Perbaikan route: parameter harus array [$courseId, $lessonId] --}}
-                    <a href="{{ route('lessons.show', [$lesson->module->course_id, $next->id]) }}" class="text-blue-600 hover:underline">Selanjutnya →</a>
+                @if($next_lesson)
+                    <a href="{{ route('lessons.show', [$next_lesson?->module?->course_id, $next_lesson?->id]) }}" class="text-blue-600 hover:underline">Selanjutnya →</a>
                 @else
                     <span class="text-gray-400">Selanjutnya →</span>
                 @endif
@@ -93,57 +92,46 @@
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById('complete-lesson-btn')?.addEventListener('click', function() {
+        document.getElementById('complete-lesson-btn')?.addEventListener('click', async function(e) {
+            e.preventDefault();
             const btn = this;
             const lessonId = btn.dataset.lessonId;
-            const xp = btn.dataset.xp;
-            const lessonTitle = document.querySelector('h1')?.textContent || 'Materi';
-
             btn.disabled = true;
             btn.classList.add('opacity-50');
-
-            fetch(`/lessons/${lessonId}/complete`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    // Sweet Alert Notification
-                    Swal.fire({
-                        title: '🎉 Selamat!',
-                        html: `
-                            <p class="text-lg font-semibold mb-3">Materi Selesai!</p>
-                            <div class="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-lg p-4 mb-4">
-                                <p class="text-3xl font-bold text-green-600">+${xp} XP</p>
-                                <p class="text-gray-600 dark:text-gray-300 mt-2">"${lessonTitle}"</p>
-                            </div>
-                            <p class="text-gray-700 dark:text-gray-300">Lanjutkan dengan mengerjakan kuis untuk XP tambahan! 🚀</p>
-                        `,
-                        icon: 'success',
-                        confirmButtonText: 'Lanjutkan',
-                        confirmButtonColor: '#10b981',
-                        allowOutsideClick: false
-                    });
-
-                    // Update button
-                    btn.innerHTML = '<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>✓ Sudah Selesai</span>';
-                    btn.className = "flex-1 bg-gray-400 text-white font-bold py-4 px-8 rounded-lg cursor-not-allowed flex items-center justify-center space-x-2";
-                    
-                    // Add to notification dropdown
-                    addNotificationToDropdown(`✅ "${lessonTitle}" selesai! +${xp} XP`);
-                    
-                    // Update notification dot
-                    const notificationDot = document.getElementById('notificationDot');
-                    if (notificationDot) {
-                        notificationDot.classList.remove('hidden');
+            try {
+                const res = await fetch(`/lessons/${lessonId}/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    Swal.fire({
+                        title: '🎉 Materi Selesai!',
+                        text: 'Lanjut ke materi berikutnya?',
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: 'Lanjut Belajar',
+                        confirmButtonColor: '#3b82f6',
+                        cancelButtonText: 'Nanti saja'
+                    }).then((result) => {
+                        if (result.isConfirmed && data.next_lesson_url) {
+                            window.location.href = data.next_lesson_url;
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: '❌ Error',
+                        text: data.message || 'Gagal menyimpan progress materi.',
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
                 }
-            })
-            .catch((err) => {
+            } catch (err) {
                 Swal.fire({
                     title: '❌ Error',
                     text: 'Gagal menyimpan progress materi. Silakan coba lagi.',
@@ -152,32 +140,8 @@
                 });
                 btn.disabled = false;
                 btn.classList.remove('opacity-50');
-            });
-        });
-        
-        function addNotificationToDropdown(message) {
-            const notificationList = document.getElementById('notificationList');
-            if (!notificationList) return;
-            
-            const emptyMessage = notificationList.querySelector('p');
-            if (emptyMessage) {
-                emptyMessage.remove();
             }
-            
-            const notifItem = document.createElement('div');
-            notifItem.className = 'bg-green-50 dark:bg-green-900/30 border-l-4 border-green-500 p-3 rounded mb-2';
-            notifItem.innerHTML = `
-                <div class="flex items-start gap-2">
-                    <span class="text-green-500 flex-shrink-0">✓</span>
-                    <div class="flex-1">
-                        <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">${message}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Baru saja</p>
-                    </div>
-                </div>
-            `;
-            
-            notificationList.insertBefore(notifItem, notificationList.firstChild);
-        }
+        });
     </script>
     @endpush
 </div>
