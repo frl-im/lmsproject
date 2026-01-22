@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'premium' => \App\Http\Middleware\PremiumMiddleware::class,
+            'block.admin.profile' => \App\Http\Middleware\BlockAdminProfile::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

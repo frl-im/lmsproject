@@ -1,4 +1,4 @@
-@if(Auth::user() && Auth::user()->is_admin)
+@if($user && $user->is_admin)
     @extends('layouts.admin')
 @else
     @extends('layouts.app')
@@ -16,7 +16,7 @@
                 </h1>
                 <p class="text-gray-600 dark:text-gray-400 mt-1">Ubah informasi akun Anda</p>
             </div>
-            @if(Auth::user() && Auth::user()->is_admin)
+            @if($user && $user->is_admin)
                 <a href="{{ route('admin.dashboard') }}"
                    class="inline-flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@
                             <!-- Name Field -->
                             <div>
                                 <label for="name" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider">Nama Lengkap</label>
-                                <input type="text" name="name" id="name" value="{{ old('name', Auth::user()->name) }}" required
+                                <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" required
                                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition">
                                 @error('name')
                                     <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
@@ -63,12 +63,12 @@
                             <!-- Email Field -->
                             <div>
                                 <label for="email" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider">Email</label>
-                                <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required
+                                <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required
                                        class="w-full px-4 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition">
                                 @error('email')
                                     <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
                                 @enderror
-                                @if (Auth::user()->email_verified_at === null)
+                                @if ($user->email_verified_at === null)
                                     <p class="text-orange-500 text-sm mt-2 flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
@@ -167,20 +167,20 @@
                     <div class="p-6 space-y-4">
                         <div>
                             <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase">Nama</p>
-                            <p class="text-lg font-bold text-gray-900 dark:text-white mt-1">{{ Auth::user()->name }}</p>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white mt-1">{{ $user->name }}</p>
                         </div>
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                             <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase">Email</p>
-                            <p class="text-lg font-bold text-gray-900 dark:text-white mt-1 break-all">{{ Auth::user()->email }}</p>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white mt-1 break-all">{{ $user->email }}</p>
                         </div>
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                             <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase">Member Sejak</p>
-                            <p class="text-lg font-bold text-gray-900 dark:text-white mt-1">{{ Auth::user()->created_at->format('d M Y') }}</p>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white mt-1">{{ $user->created_at->format('d M Y') }}</p>
                         </div>
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                             <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase">Tipe Akun</p>
                             <p class="text-lg font-bold text-gray-900 dark:text-white mt-1 flex items-center gap-2">
-                                @if(Auth::user()->is_admin)
+                                @if($user->is_admin)
                                     👨‍💼 Administrator
                                 @else
                                     📚 Siswa
@@ -198,7 +198,7 @@
                     <div class="p-6 space-y-4">
                         <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                             <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Email Terverifikasi</span>
-                            @if(Auth::user()->email_verified_at)
+                            @if($user->email_verified_at)
                                 <span class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full text-xs font-bold">✓ Ya</span>
                             @else
                                 <span class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 rounded-full text-xs font-bold">⚠ Belum</span>

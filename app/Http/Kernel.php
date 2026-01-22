@@ -46,7 +46,7 @@ class Kernel extends HttpKernel
         'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\IsAdmin::class,
         'premium' => \App\Http\Middleware\PremiumMiddleware::class,
-        'block.admin.profile' => \App\Http\Middleware\BlockAdminProfileAccess::class,
+        'block.admin.profile' => \App\Http\Middleware\BlockAdminProfile::class,
         // ...other route middleware...
     ];
 }
