@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200">
                 Bank Soal: {{ $lesson->title }}
             </h2>
-            <a href="{{ route('admin.quiz.create', $lesson) }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">
+            <a href="{{ route('admin.questions.create', $lesson) }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">
                 + Tambah Soal
             </a>
         </div>

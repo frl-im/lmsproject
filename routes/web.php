@@ -57,9 +57,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
     // Dashboard siswa
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware('auth')
-    ->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
 
 
     // Kursus
@@ -91,18 +90,13 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     Route::get('/leaderboard/course/{course}', [LeaderboardController::class, 'byCourse'])
         ->name('leaderboard.course');
 
-    // Profile
-    Route::get('/profile', [ProfileController::class, 'show'])
-        ->name('profile.show');
-
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
-
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
-
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
+    // Profile (khusus non-admin)
+    Route::middleware('block.admin.profile')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 
     // Finance / Subscription (BAGIAN 3)
     Route::prefix('finance')->name('finance.')->group(function () {

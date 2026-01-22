@@ -1,47 +1,26 @@
 @extends('layouts.landing')
 
 @section('content')
-<nav class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-            <div class="flex items-center">
-                <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-600">
-                    📚 LMS Pro
+<section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6">
+            Belajar Jadi Lebih Seru 🚀
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 text-blue-100">
+            Platform pembelajaran interaktif dengan gamifikasi penuh, kuis menarik, dan tracking progress real-time
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+            @if(!Auth::check())
+                <a href="{{ route('register') }}" class="px-8 py-3 bg-white text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition">
+                    Daftar Gratis
                 </a>
-            </div>
-
-            <div class="hidden md:flex space-x-8">
-                <a href="#features" class="text-gray-700 hover:text-blue-600 transition">Fitur</a>
-                <a href="#courses" class="text-gray-700 hover:text-blue-600 transition">Kursus</a>
-                <a href="#pricing" class="text-gray-700 hover:text-blue-600 transition">Harga</a>
-                <a href="https://wa.me/6281234567890" target="_blank" class="text-gray-700 hover:text-blue-600 transition">Hubungi</a>
-            </div>
-
-            <div class="flex items-center space-x-4">
-                <div class="relative group">
-                    <button class="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
-                        <span class="text-xl">🌐</span>
-                        <span class="hidden sm:inline">ID</span>
-                    </button>
-                    <div class="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition">
-                        <a href="#" class="block px-4 py-2 hover:bg-blue-50">🇮🇩 Indonesia</a>
-                        <a href="#" class="block px-4 py-2 hover:bg-blue-50">🇬🇧 English</a>
-                    </div>
-                </div>
-
-                @if(Auth::check())
-                    <a href="{{ route('dashboard') }}" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                        Dashboard
-                    </a>
-                @else
-                    <a href="{{ route('login') }}" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                        Login
-                    </a>
-                @endif
-            </div>
+            @endif
+            <a href="#courses" class="px-8 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-blue-600 transition">
+                Lihat Kursus
+            </a>
         </div>
     </div>
-</nav>
+</section>
 
 <section class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -73,9 +52,6 @@
                 <h3 class="text-2xl font-bold mb-4">Gamifikasi Penuh</h3>
                 <p class="text-gray-600">Dapatkan XP, poin, badge, dan naik leaderboard saat belajar</p>
             </div>
-
-            <div class="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition">
-                <div class="text-4xl mb-4">📊</div>
                 <h3 class="text-2xl font-bold mb-4">Progress Tracking</h3>
                 <p class="text-gray-600">Pantau perkembangan belajar dengan dashboard interaktif</p>
             </div>

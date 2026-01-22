@@ -1,4 +1,8 @@
-@extends('layouts.app')
+@if(Auth::user() && Auth::user()->is_admin)
+    @extends('layouts.admin')
+@else
+    @extends('layouts.app')
+@endif
 
 @section('content')
 <div class="py-12">
@@ -12,13 +16,23 @@
                 </h1>
                 <p class="text-gray-600 dark:text-gray-400 mt-1">Ubah informasi akun Anda</p>
             </div>
-            <a href="{{ route('profile.show') }}" 
-               class="inline-flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Kembali
-            </a>
+            @if(Auth::user() && Auth::user()->is_admin)
+                <a href="{{ route('admin.dashboard') }}"
+                   class="inline-flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Kembali
+                </a>
+            @else
+                <a href="{{ route('profile.show') }}"
+                   class="inline-flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Kembali
+                </a>
+            @endif
         </div>
 
         <!-- Main Content -->
