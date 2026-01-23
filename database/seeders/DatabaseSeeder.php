@@ -35,5 +35,9 @@ class DatabaseSeeder extends Seeder
         
         // Seed sample quiz questions
         $this->call(QuestionSeeder::class);
+        $this->call(CoursesTableSeeder::class);
+        $this->call(ModulesTableSeeder::class);
+        $this->call(LessonsTableSeeder::class);
+        $this->call(QuestionsTableSeeder::class);
     }
 }

@@ -239,5 +239,19 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
     }); // Close authenticated user routes
 
+    use Illuminate\Support\Facades\Artisan;
+
+// Rute Darurat untuk Migrasi Database
+Route::get('/emergency-reset-db', function () {
+    try {
+        // Menjalankan migrate:fresh (hapus semua tabel & buat ulang) + seed (isi data awal)
+        Artisan::call('migrate:fresh --seed --force');
+        
+        return "<h1>SUKSES! 🎉</h1><p>Database berhasil di-reset dan diisi.</p><pre>" . Artisan::output() . "</pre>";
+    } catch (\Exception $e) {
+        return "<h1>GAGAL 😭</h1><p>" . $e->getMessage() . "</p>";
+    }
+});
+
 // ROUTE AUTH BAWAAN
 require __DIR__.'/auth.php';
