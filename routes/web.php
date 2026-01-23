@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\UserProgressController;
 
 // AUTH
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -239,7 +240,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
     }); // Close authenticated user routes
 
-    use Illuminate\Support\Facades\Artisan;
+    
 
 // ROUTE AUTH BAWAAN
 require __DIR__.'/auth.php';
