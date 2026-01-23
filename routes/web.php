@@ -241,6 +241,9 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
     use Illuminate\Support\Facades\Artisan;
 
+// ROUTE AUTH BAWAAN
+require __DIR__.'/auth.php';
+
 // Rute Darurat untuk Migrasi Database
 Route::get('/emergency-reset-db', function () {
     try {
@@ -252,6 +255,3 @@ Route::get('/emergency-reset-db', function () {
         return "<h1>GAGAL 😭</h1><p>" . $e->getMessage() . "</p>";
     }
 });
-
-// ROUTE AUTH BAWAAN
-require __DIR__.'/auth.php';
